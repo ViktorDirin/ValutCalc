@@ -4,14 +4,19 @@ class ValutCalc {
         this.activeCurrency = 'USD';
         this.currentValue = '1';
         this.baseCurrency = 'USD';
+        this.isDarkTheme = true; // По умолчанию темная тема
+        this.updateAvailable = false;
+        this.serviceWorkerRegistration = null;
         
         this.init();
     }
 
     async init() {
+        this.loadTheme();
         this.setupEventListeners();
         await this.loadExchangeRates();
         this.updateDisplay();
+        this.checkForUpdates();
     }
 
     setupEventListeners() {
@@ -41,6 +46,21 @@ class ValutCalc {
         // Клавиатура
         document.addEventListener('keydown', (e) => {
             this.handleKeyboardInput(e);
+        });
+
+        // Кнопка смены темы
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            this.toggleTheme();
+        });
+
+        // Кнопка настроек (пока без функционала)
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            console.log('Настройки - функционал будет добавлен позже');
+        });
+
+        // Кнопка обновления
+        document.getElementById('updateBtn').addEventListener('click', () => {
+            this.updateApp();
         });
     }
 
@@ -250,6 +270,134 @@ class ValutCalc {
         
         // Форматируем с 4 знаками после запятой
         return value.toFixed(4).replace(/\.?0+$/, '') || '0';
+    }
+
+    loadTheme() {
+        // Загружаем сохраненную тему из localStorage
+        const savedTheme = localStorage.getItem('valutcalc_theme');
+        if (savedTheme === 'light') {
+            this.isDarkTheme = false;
+            document.body.classList.add('light-theme');
+        } else {
+            this.isDarkTheme = true;
+            document.body.classList.remove('light-theme');
+        }
+    }
+
+    toggleTheme() {
+        this.isDarkTheme = !this.isDarkTheme;
+        
+        if (this.isDarkTheme) {
+            document.body.classList.remove('light-theme');
+            localStorage.setItem('valutcalc_theme', 'dark');
+        } else {
+            document.body.classList.add('light-theme');
+            localStorage.setItem('valutcalc_theme', 'light');
+        }
+    }
+
+    async checkForUpdates() {
+        if ('serviceWorker' in navigator) {
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    this.serviceWorkerRegistration = registration;
+                    
+                    // Проверяем обновления
+                    await registration.update();
+                    
+                    // Слушаем события обновления
+                    registration.addEventListener('updatefound', () => {
+                        this.showUpdateButton();
+                    });
+                }
+            } catch (error) {
+                console.log('Ошибка проверки обновлений:', error);
+            }
+        }
+    }
+
+    showUpdateButton() {
+        const updateBtn = document.getElementById('updateBtn');
+        updateBtn.style.display = 'flex';
+        this.updateAvailable = true;
+        
+        // Показываем уведомление
+        this.showUpdateNotification();
+    }
+
+    showUpdateNotification() {
+        // Создаем уведомление о доступном обновлении
+        const notification = document.createElement('div');
+        notification.className = 'update-notification';
+        notification.innerHTML = `
+            <div class="update-notification-content">
+                <span>Доступно обновление приложения</span>
+                <button class="update-notification-btn" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+        
+        // Добавляем стили для уведомления
+        notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 107, 53, 0.9);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Автоматически скрываем через 5 секунд
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    async updateApp() {
+        if (!this.updateAvailable || !this.serviceWorkerRegistration) {
+            return;
+        }
+
+        const updateBtn = document.getElementById('updateBtn');
+        const updateText = updateBtn.querySelector('.update-text');
+        
+        // Показываем состояние загрузки
+        updateBtn.classList.add('updating');
+        updateText.textContent = 'Обновление...';
+        updateBtn.disabled = true;
+
+        try {
+            // Принудительно обновляем Service Worker
+            await this.serviceWorkerRegistration.update();
+            
+            // Если есть ожидающий Service Worker, активируем его
+            if (this.serviceWorkerRegistration.waiting) {
+                this.serviceWorkerRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
+            
+            // Перезагружаем страницу для применения обновления
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+            
+        } catch (error) {
+            console.error('Ошибка обновления:', error);
+            updateText.textContent = 'Ошибка';
+            setTimeout(() => {
+                updateBtn.classList.remove('updating');
+                updateText.textContent = 'Обновить';
+                updateBtn.disabled = false;
+            }, 2000);
+        }
     }
 }
 

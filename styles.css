@@ -15,6 +15,13 @@ body {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Светлая тема */
+body.light-theme {
+    background-color: #f5f5f5;
+    color: #333333;
 }
 
 .app {
@@ -22,6 +29,126 @@ body {
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    transition: background 0.3s ease;
+}
+
+/* Светлая тема для app */
+body.light-theme .app {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+/* Верхняя панель */
+.top-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.top-panel-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body.light-theme .top-panel {
+    background: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Кнопки верхней панели */
+.theme-toggle,
+.settings-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+body.light-theme .theme-toggle,
+body.light-theme .settings-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333333;
+}
+
+.theme-toggle:hover,
+.settings-btn:hover {
+    background: rgba(255, 107, 53, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+body.light-theme .theme-toggle:hover,
+body.light-theme .settings-btn:hover {
+    background: rgba(255, 107, 53, 0.1);
+}
+
+.theme-toggle:active,
+.settings-btn:active {
+    transform: translateY(0);
+}
+
+/* Кнопка обновления */
+.update-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+body.light-theme .update-btn {
+    background: rgba(255, 107, 53, 0.1);
+    color: #ff6b35;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+.update-btn:hover {
+    background: rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+}
+
+body.light-theme .update-btn:hover {
+    background: rgba(255, 107, 53, 0.2);
+}
+
+.update-btn:active {
+    transform: translateY(0);
+}
+
+.update-btn.updating {
+    animation: spin 1s linear infinite;
+}
+
+.update-btn .update-text {
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Секция валют */
@@ -58,6 +185,34 @@ body {
     box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
 }
 
+/* Светлая тема для валютных строк */
+body.light-theme .currency-row {
+    background: rgba(255, 255, 255, 0.8);
+    color: #333333;
+}
+
+body.light-theme .currency-row:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+body.light-theme .currency-row.active {
+    border-color: #ff6b35;
+    background: rgba(255, 107, 53, 0.15);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+}
+
+body.light-theme .currency-name {
+    color: #333333;
+}
+
+body.light-theme .currency-code {
+    color: #666666;
+}
+
+body.light-theme .currency-value {
+    color: #333333;
+}
+
 .currency-name {
     font-size: 16px;
     font-weight: 500;
@@ -81,10 +236,51 @@ body {
 /* Секция клавиатуры */
 .keypad-section {
     display: flex;
-    padding: 20px 10px 50px 10px;
+    flex-direction: column;
+    padding: 20px 10px 20px 10px;
     gap: 15px;
     background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
+}
+
+/* Светлая тема для клавиатуры */
+body.light-theme .keypad-section {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.keypad-container {
+    display: flex;
+    gap: 15px;
+}
+
+.keypad-footer {
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 10px;
+}
+
+.keypad-footer .app-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.keypad-footer .app-subtitle {
+    font-size: 12px;
+    color: #a0a0a0;
+    margin: 2px 0 0 0;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Светлая тема для подписи */
+body.light-theme .keypad-footer .app-title {
+    color: #333333;
+}
+
+body.light-theme .keypad-footer .app-subtitle {
+    color: #666666;
 }
 
 .keypad {
@@ -123,6 +319,21 @@ body {
 .key:active {
     transform: translateY(0);
     background: rgba(255, 255, 255, 0.15);
+}
+
+/* Светлая тема для кнопок клавиатуры */
+body.light-theme .key {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .key:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .key:active {
+    background: rgba(0, 0, 0, 0.08);
 }
 
 /* Боковые кнопки */
@@ -176,6 +387,17 @@ body {
 
 .delete-btn:active {
     transform: translateY(0);
+}
+
+/* Светлая тема для боковых кнопок */
+body.light-theme .delete-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: #ff6b35;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+body.light-theme .delete-btn:hover {
+    background: rgba(255, 107, 53, 0.1);
 }
 
 /* Статус загрузки */
@@ -307,9 +529,22 @@ body {
     }
     
     .keypad-section {
-        padding: 10px 10px 50px 10px;
+        padding: 10px 10px 20px 10px;
         gap: 8px;
         flex-shrink: 0;
+    }
+    
+    .keypad-footer {
+        padding: 10px 0;
+        margin-top: 8px;
+    }
+    
+    .keypad-footer .app-title {
+        font-size: 16px;
+    }
+    
+    .keypad-footer .app-subtitle {
+        font-size: 11px;
     }
     
     .keypad {
@@ -363,8 +598,21 @@ body {
     }
     
     .keypad-section {
-        padding: 8px 10px 50px 10px;
+        padding: 8px 10px 15px 10px;
         gap: 6px;
+    }
+    
+    .keypad-footer {
+        padding: 8px 0;
+        margin-top: 6px;
+    }
+    
+    .keypad-footer .app-title {
+        font-size: 14px;
+    }
+    
+    .keypad-footer .app-subtitle {
+        font-size: 10px;
     }
     
     .keypad {

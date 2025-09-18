@@ -137,6 +137,7 @@ self.addEventListener('fetch', event => {
 // Обработка сообщений от основного потока
 self.addEventListener('message', event => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
+        console.log('SW: Получена команда SKIP_WAITING');
         self.skipWaiting();
     }
     
@@ -151,6 +152,40 @@ self.addEventListener('message', event => {
                 cache.put('/api/rates', response);
                 console.log('SW: Курсы валют сохранены в кэш');
             });
+    }
+});
+
+// Обработка активации нового Service Worker
+self.addEventListener('activate', event => {
+    console.log('SW: Активация');
+    
+    event.waitUntil(
+        caches.keys()
+            .then(cacheNames => {
+                return Promise.all(
+                    cacheNames.map(cacheName => {
+                        if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+                            console.log('SW: Удаление старого кэша:', cacheName);
+                            return caches.delete(cacheName);
+                        }
+                    })
+                );
+            })
+            .then(() => {
+                console.log('SW: Активация завершена');
+                // Уведомляем клиентов о том, что новый SW активирован
+                return self.clients.claim();
+            })
+    );
+});
+
+// Уведомляем клиентов о доступности обновления
+self.addEventListener('message', event => {
+    if (event.data && event.data.type === 'CHECK_UPDATE') {
+        // Проверяем, есть ли обновления
+        self.registration.update().then(() => {
+            console.log('SW: Проверка обновлений завершена');
+        });
     }
 });
 
