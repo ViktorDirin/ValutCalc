@@ -163,7 +163,10 @@ class ValutCalc {
     }
 
     addDigit(digit) {
-        if (this.currentValue === '0') {
+        // Если текущее значение "1" (по умолчанию), заменяем его на новую цифру
+        if (this.currentValue === '1') {
+            this.currentValue = digit;
+        } else if (this.currentValue === '0') {
             this.currentValue = digit;
         } else {
             this.currentValue += digit;
@@ -179,7 +182,10 @@ class ValutCalc {
     }
 
     addDoubleZero() {
-        if (this.currentValue === '0') {
+        // Если текущее значение "1" (по умолчанию), заменяем его на "100"
+        if (this.currentValue === '1') {
+            this.currentValue = '100';
+        } else if (this.currentValue === '0') {
             this.currentValue = '0.00';
         } else {
             this.currentValue += '00';
@@ -191,7 +197,8 @@ class ValutCalc {
         if (this.currentValue.length > 1) {
             this.currentValue = this.currentValue.slice(0, -1);
         } else {
-            this.currentValue = '0';
+            // При удалении последней цифры возвращаемся к значению по умолчанию "1"
+            this.currentValue = '1';
         }
         this.updateDisplay();
     }

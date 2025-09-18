@@ -1,0 +1,62 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Градиенты для современного вида -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0f0f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="dollarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4aa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00b894;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="euroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fdcb6e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e17055;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="dividerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#636e72;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#636e72;stop-opacity:0.8" />
+    </linearGradient>
+    
+    <!-- Тень для глубины -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Фон с закругленными углами -->
+  <rect width="512" height="512" rx="80" fill="url(#bg)"/>
+  
+  <!-- Основной круг -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="url(#dividerGradient)" stroke-width="3" opacity="0.3"/>
+  
+  <!-- Разделительная линия -->
+  <line x1="76" y1="76" x2="436" y2="436" stroke="url(#dividerGradient)" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Левая половина - Доллар -->
+  <path d="M 256 256 L 76 76 A 180 180 0 0 1 256 76 A 180 180 0 0 1 436 256 Z" fill="url(#dollarGradient)" opacity="0.15"/>
+  <text x="166" y="166" text-anchor="middle" fill="url(#dollarGradient)" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700">$</text>
+  
+  <!-- Правая половина - Евро -->
+  <path d="M 256 256 L 436 436 A 180 180 0 0 1 256 436 A 180 180 0 0 1 76 256 Z" fill="url(#euroGradient)" opacity="0.15"/>
+  <text x="346" y="346" text-anchor="middle" fill="url(#euroGradient)" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="700">€</text>
+  
+  <!-- Центральный круг для акцента -->
+  <circle cx="256" cy="256" r="8" fill="#ffffff" opacity="0.8"/>
+  
+  <!-- Стрелки конвертации (перемещены ниже к центру) -->
+  <g transform="translate(256, 280)">
+    <!-- Стрелка влево -->
+    <path d="M -50 -15 L -35 -15 L -35 -25 L -20 -15 L -35 -5 L -35 -15" fill="url(#dollarGradient)" opacity="0.8"/>
+    <!-- Стрелка вправо -->
+    <path d="M 50 -15 L 35 -15 L 35 -25 L 20 -15 L 35 -5 L 35 -15" fill="url(#euroGradient)" opacity="0.8"/>
+  </g>
+  
+  <!-- Текст приложения (увеличен) -->
+  <text x="256" y="420" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="600">ValutCalc</text>
+  <text x="256" y="450" text-anchor="middle" fill="#a0a0a0" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="400">Currency Converter</text>
+</svg>

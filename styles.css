@@ -81,7 +81,7 @@ body {
 /* Секция клавиатуры */
 .keypad-section {
     display: flex;
-    padding: 20px;
+    padding: 20px 10px 50px 10px;
     gap: 15px;
     background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
@@ -272,46 +272,162 @@ body {
     }
 }
 
-/* Адаптивность */
-@media (max-width: 480px) {
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .app {
+        height: 100vh;
+        height: 100dvh; /* Динамическая высота viewport для мобильных */
+    }
+    
     .currency-section {
-        padding: 15px;
-        gap: 12px;
+        padding: 10px;
+        gap: 8px;
+        flex: 1;
+        min-height: 0;
     }
     
     .currency-row {
-        padding: 12px 15px;
+        padding: 12px 16px;
+        border-radius: 8px;
     }
     
     .currency-name {
         font-size: 14px;
+        font-weight: 500;
     }
     
     .currency-code {
         font-size: 12px;
+        margin-left: 8px;
     }
     
     .currency-value {
         font-size: 16px;
+        font-weight: 600;
     }
     
     .keypad-section {
-        padding: 15px;
-        gap: 10px;
+        padding: 10px 10px 50px 10px;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    
+    .keypad {
+        gap: 8px;
+    }
+    
+    .keypad-row {
+        gap: 8px;
     }
     
     .key {
         height: 50px;
         font-size: 18px;
+        border-radius: 8px;
     }
     
     .side-btn {
         height: 50px;
         font-size: 14px;
+        border-radius: 8px;
     }
     
     .side-buttons {
         width: 50px;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .currency-section {
+        padding: 8px;
+        gap: 6px;
+    }
+    
+    .currency-row {
+        padding: 10px 12px;
+        border-radius: 6px;
+    }
+    
+    .currency-name {
+        font-size: 13px;
+    }
+    
+    .currency-code {
+        font-size: 11px;
+        margin-left: 6px;
+    }
+    
+    .currency-value {
+        font-size: 15px;
+    }
+    
+    .keypad-section {
+        padding: 8px 10px 50px 10px;
+        gap: 6px;
+    }
+    
+    .keypad {
+        gap: 6px;
+    }
+    
+    .keypad-row {
+        gap: 6px;
+    }
+    
+    .key {
+        height: 45px;
+        font-size: 16px;
+        border-radius: 6px;
+    }
+    
+    .side-btn {
+        height: 45px;
+        font-size: 13px;
+        border-radius: 6px;
+    }
+    
+    .side-buttons {
+        width: 45px;
+        gap: 6px;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 360px) {
+    .currency-section {
+        padding: 6px;
+        gap: 4px;
+    }
+    
+    .currency-row {
+        padding: 8px 10px;
+    }
+    
+    .currency-name {
+        font-size: 12px;
+    }
+    
+    .currency-code {
+        font-size: 10px;
+    }
+    
+    .currency-value {
+        font-size: 14px;
+    }
+    
+    .key {
+        height: 40px;
+        font-size: 15px;
+    }
+    
+    .side-btn {
+        height: 40px;
+        font-size: 12px;
+    }
+    
+    .side-buttons {
+        width: 40px;
     }
 }
 
