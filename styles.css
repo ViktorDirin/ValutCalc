@@ -151,6 +151,212 @@ body.light-theme .update-btn:hover {
     to { transform: rotate(360deg); }
 }
 
+/* Модальное окно настроек */
+.settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.settings-content {
+    background: #1a1a1a;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.light-theme .settings-content {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.light-theme .settings-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.settings-header h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+body.light-theme .settings-header h2 {
+    color: #333333;
+}
+
+.settings-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+body.light-theme .settings-close {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333333;
+}
+
+.settings-close:hover {
+    background: rgba(255, 107, 53, 0.2);
+}
+
+.settings-body {
+    padding: 20px;
+}
+
+.settings-section {
+    margin-bottom: 24px;
+}
+
+.settings-section h3 {
+    margin: 0 0 12px 0;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+body.light-theme .settings-section h3 {
+    color: #333333;
+}
+
+.settings-section p {
+    margin: 8px 0;
+    color: #cccccc;
+    font-size: 14px;
+}
+
+body.light-theme .settings-section p {
+    color: #666666;
+}
+
+/* Кнопки в настройках */
+.install-btn,
+.update-btn-settings {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 8px;
+}
+
+body.light-theme .install-btn,
+body.light-theme .update-btn-settings {
+    background: rgba(255, 107, 53, 0.1);
+}
+
+.install-btn:hover,
+.update-btn-settings:hover {
+    background: rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+}
+
+body.light-theme .install-btn:hover,
+body.light-theme .update-btn-settings:hover {
+    background: rgba(255, 107, 53, 0.2);
+}
+
+/* Опции темы */
+.theme-options {
+    display: flex;
+    gap: 12px;
+}
+
+.theme-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.theme-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.light-theme .theme-option:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.theme-option input[type="radio"] {
+    display: none;
+}
+
+.theme-option input[type="radio"]:checked + .theme-preview {
+    border-color: #ff6b35;
+}
+
+.theme-option input[type="radio"]:checked ~ span {
+    color: #ff6b35;
+}
+
+.theme-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.theme-preview.dark {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+.theme-preview.light {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+.theme-option span {
+    color: #cccccc;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+body.light-theme .theme-option span {
+    color: #666666;
+}
+
 /* Секция валют */
 .currency-section {
     flex: 1;

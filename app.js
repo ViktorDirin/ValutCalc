@@ -7,6 +7,9 @@ class ValutCalc {
         this.isDarkTheme = true; // По умолчанию темная тема
         this.updateAvailable = false;
         this.serviceWorkerRegistration = null;
+        this.deferredPrompt = null;
+        this.canInstall = false;
+        this.isInstalled = false;
         
         this.init();
     }
@@ -17,6 +20,7 @@ class ValutCalc {
         await this.loadExchangeRates();
         this.updateDisplay();
         this.checkForUpdates();
+        this.setupPWAInstall();
     }
 
     setupEventListeners() {
@@ -53,14 +57,31 @@ class ValutCalc {
             this.toggleTheme();
         });
 
-        // Кнопка настроек (пока без функционала)
+        // Кнопка настроек
         document.getElementById('settingsBtn').addEventListener('click', () => {
-            console.log('Настройки - функционал будет добавлен позже');
+            this.openSettings();
         });
 
-        // Кнопка обновления
-        document.getElementById('updateBtn').addEventListener('click', () => {
+        // Закрытие настроек
+        document.getElementById('settingsClose').addEventListener('click', () => {
+            this.closeSettings();
+        });
+
+        // Кнопка установки
+        document.getElementById('installBtn').addEventListener('click', () => {
+            this.installApp();
+        });
+
+        // Кнопка обновления в настройках
+        document.getElementById('updateBtnSettings').addEventListener('click', () => {
             this.updateApp();
+        });
+
+        // Переключение темы в настройках
+        document.querySelectorAll('input[name="theme"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.changeTheme(e.target.value);
+            });
         });
     }
 
@@ -362,17 +383,85 @@ class ValutCalc {
         }, 5000);
     }
 
+    openSettings() {
+        const modal = document.getElementById('settingsModal');
+        modal.style.display = 'flex';
+        
+        // Обновляем состояние кнопок
+        this.updateSettingsButtons();
+        
+        // Устанавливаем текущую тему
+        const currentTheme = this.isDarkTheme ? 'dark' : 'light';
+        document.querySelector(`input[name="theme"][value="${currentTheme}"]`).checked = true;
+    }
+
+    closeSettings() {
+        const modal = document.getElementById('settingsModal');
+        modal.style.display = 'none';
+    }
+
+    updateSettingsButtons() {
+        const installBtn = document.getElementById('installBtn');
+        const updateBtn = document.getElementById('updateBtnSettings');
+        
+        // Показываем кнопку установки если приложение не установлено
+        if (this.canInstall && !this.isInstalled) {
+            installBtn.style.display = 'flex';
+        } else {
+            installBtn.style.display = 'none';
+        }
+        
+        // Показываем кнопку обновления если есть обновления
+        if (this.updateAvailable) {
+            updateBtn.style.display = 'flex';
+        } else {
+            updateBtn.style.display = 'none';
+        }
+    }
+
+    async installApp() {
+        if (this.deferredPrompt) {
+            this.deferredPrompt.prompt();
+            const { outcome } = await this.deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                console.log('PWA установлено');
+                this.isInstalled = true;
+                this.updateSettingsButtons();
+            }
+            
+            this.deferredPrompt = null;
+        }
+    }
+
+    changeTheme(theme) {
+        if (theme === 'light') {
+            this.isDarkTheme = false;
+            document.body.classList.add('light-theme');
+            localStorage.setItem('valutcalc_theme', 'light');
+        } else {
+            this.isDarkTheme = true;
+            document.body.classList.remove('light-theme');
+            localStorage.setItem('valutcalc_theme', 'dark');
+        }
+    }
+
     async updateApp() {
         if (!this.updateAvailable || !this.serviceWorkerRegistration) {
             return;
         }
 
-        const updateBtn = document.getElementById('updateBtn');
-        const updateText = updateBtn.querySelector('.update-text');
+        const updateBtn = document.getElementById('updateBtnSettings');
         
         // Показываем состояние загрузки
-        updateBtn.classList.add('updating');
-        updateText.textContent = 'Обновление...';
+        updateBtn.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="updating">
+                <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Обновление...
+        `;
         updateBtn.disabled = true;
 
         try {
@@ -391,12 +480,48 @@ class ValutCalc {
             
         } catch (error) {
             console.error('Ошибка обновления:', error);
-            updateText.textContent = 'Ошибка';
+            updateBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                    <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Ошибка
+            `;
             setTimeout(() => {
-                updateBtn.classList.remove('updating');
-                updateText.textContent = 'Обновить';
+                updateBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                        <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Обновить приложение
+                `;
                 updateBtn.disabled = false;
             }, 2000);
+        }
+    }
+
+    setupPWAInstall() {
+        // Обработка события beforeinstallprompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+            this.canInstall = true;
+            console.log('PWA можно установить');
+        });
+
+        // Обработка события appinstalled
+        window.addEventListener('appinstalled', () => {
+            this.isInstalled = true;
+            this.canInstall = false;
+            this.deferredPrompt = null;
+            console.log('PWA установлено');
+        });
+
+        // Проверяем, установлено ли приложение
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            this.isInstalled = true;
         }
     }
 }

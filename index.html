@@ -21,14 +21,7 @@
             </button>
             
             <div class="top-panel-center">
-                <button class="update-btn" id="updateBtn" title="Проверить обновления" style="display: none;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M1 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span class="update-text">Обновить</span>
-                </button>
+                <!-- Кнопка обновления перенесена в настройки -->
             </div>
             
             <button class="settings-btn" id="settingsBtn" title="Настройки">
@@ -111,6 +104,61 @@
         <!-- Ошибка загрузки -->
         <div class="error" id="error" style="display: none;">
             <span>Ошибка загрузки курсов. Используются кэшированные данные.</span>
+        </div>
+
+        <!-- Модальное окно настроек -->
+        <div class="settings-modal" id="settingsModal" style="display: none;">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Настройки</h2>
+                    <button class="settings-close" id="settingsClose">×</button>
+                </div>
+                
+                <div class="settings-body">
+                    <div class="settings-section">
+                        <h3>Приложение</h3>
+                        <button class="install-btn" id="installBtn" style="display: none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                                <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            Установить приложение
+                        </button>
+                        
+                        <button class="update-btn-settings" id="updateBtnSettings" style="display: none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                                <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            Обновить приложение
+                        </button>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>Тема</h3>
+                        <div class="theme-options">
+                            <label class="theme-option">
+                                <input type="radio" name="theme" value="dark" checked>
+                                <span class="theme-preview dark"></span>
+                                <span>Темная</span>
+                            </label>
+                            <label class="theme-option">
+                                <input type="radio" name="theme" value="light">
+                                <span class="theme-preview light"></span>
+                                <span>Светлая</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>О приложении</h3>
+                        <p>ValutCalc v1.0.0</p>
+                        <p>Конвертер валют с поддержкой PWA</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
