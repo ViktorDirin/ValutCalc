@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ValutCalc - Конвертер валют</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="description" content="Конвертер валют с поддержкой USD, EUR, AZN">
+</head>
+<body>
+    <div class="app">
+        <!-- Валютные строки -->
+        <div class="currency-section">
+            <div class="currency-row active" data-currency="USD">
+                <span class="currency-name">Доллар США</span>
+                <span class="currency-code">USD</span>
+                <span class="currency-value">1</span>
+            </div>
+            <div class="currency-row" data-currency="EUR">
+                <span class="currency-name">Евро</span>
+                <span class="currency-code">EUR</span>
+                <span class="currency-value">0</span>
+            </div>
+            <div class="currency-row" data-currency="AZN">
+                <span class="currency-name">Азербайджанский манат</span>
+                <span class="currency-code">AZN</span>
+                <span class="currency-value">0</span>
+            </div>
+        </div>
+
+        <!-- Цифровая клавиатура -->
+        <div class="keypad-section">
+            <div class="keypad">
+                <div class="keypad-row">
+                    <button class="key" data-key="7">7</button>
+                    <button class="key" data-key="8">8</button>
+                    <button class="key" data-key="9">9</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="key" data-key="4">4</button>
+                    <button class="key" data-key="5">5</button>
+                    <button class="key" data-key="6">6</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="key" data-key="1">1</button>
+                    <button class="key" data-key="2">2</button>
+                    <button class="key" data-key="3">3</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="key" data-key="00">00</button>
+                    <button class="key" data-key="0">0</button>
+                    <button class="key" data-key=".">,</button>
+                </div>
+            </div>
+            
+            <!-- Боковые кнопки -->
+            <div class="side-buttons">
+                <button class="side-btn clear-btn" data-action="clear">AC</button>
+                <button class="side-btn delete-btn" data-action="delete">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 9L15 15M15 9L9 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Статус загрузки -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <span>Загрузка курсов валют...</span>
+        </div>
+
+        <!-- Ошибка загрузки -->
+        <div class="error" id="error" style="display: none;">
+            <span>Ошибка загрузки курсов. Используются кэшированные данные.</span>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

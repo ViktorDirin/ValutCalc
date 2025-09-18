@@ -1,0 +1,328 @@
+/* Сброс стилей и базовые настройки */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+/* Секция валют */
+.currency-section {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+}
+
+.currency-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.currency-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.currency-row.active {
+    border-color: #ff6b35;
+    background: rgba(255, 107, 53, 0.1);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
+.currency-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.currency-code {
+    font-size: 14px;
+    color: #cccccc;
+    font-weight: 400;
+    margin-left: 10px;
+}
+
+.currency-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Секция клавиатуры */
+.keypad-section {
+    display: flex;
+    padding: 20px;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.keypad {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.keypad-row {
+    display: flex;
+    gap: 10px;
+}
+
+.key {
+    flex: 1;
+    height: 60px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.key:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.key:active {
+    transform: translateY(0);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Боковые кнопки */
+.side-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 60px;
+}
+
+.side-btn {
+    height: 60px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.clear-btn {
+    background: #ff6b35;
+    color: #ffffff;
+    flex: 1;
+}
+
+.clear-btn:hover {
+    background: #ff5722;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+}
+
+.clear-btn:active {
+    transform: translateY(0);
+}
+
+.delete-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ff6b35;
+    flex: 1;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+.delete-btn:hover {
+    background: rgba(255, 107, 53, 0.1);
+    transform: translateY(-2px);
+}
+
+.delete-btn:active {
+    transform: translateY(0);
+}
+
+/* Статус загрузки */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 26, 26, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.loading.hidden {
+    display: none;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 107, 53, 0.3);
+    border-top: 3px solid #ff6b35;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading span {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Ошибка */
+.error {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    background: rgba(255, 87, 34, 0.9);
+    color: #ffffff;
+    padding: 15px 20px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1001;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+/* Анимации */
+.currency-row {
+    animation: slideInUp 0.5s ease-out;
+}
+
+.currency-row:nth-child(1) { animation-delay: 0.1s; }
+.currency-row:nth-child(2) { animation-delay: 0.2s; }
+.currency-row:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.keypad {
+    animation: slideInUp 0.5s ease-out 0.4s both;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .currency-section {
+        padding: 15px;
+        gap: 12px;
+    }
+    
+    .currency-row {
+        padding: 12px 15px;
+    }
+    
+    .currency-name {
+        font-size: 14px;
+    }
+    
+    .currency-code {
+        font-size: 12px;
+    }
+    
+    .currency-value {
+        font-size: 16px;
+    }
+    
+    .keypad-section {
+        padding: 15px;
+        gap: 10px;
+    }
+    
+    .key {
+        height: 50px;
+        font-size: 18px;
+    }
+    
+    .side-btn {
+        height: 50px;
+        font-size: 14px;
+    }
+    
+    .side-buttons {
+        width: 50px;
+    }
+}
+
+/* Эффекты для PWA */
+@media (display-mode: standalone) {
+    body {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+}
