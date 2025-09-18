@@ -404,9 +404,28 @@ class ValutCalc {
         const installBtn = document.getElementById('installBtn');
         const updateBtn = document.getElementById('updateBtnSettings');
         
-        // Показываем кнопку установки если приложение не установлено
-        if (this.canInstall && !this.isInstalled) {
+        // Всегда показываем кнопку установки если приложение не установлено
+        if (!this.isInstalled) {
             installBtn.style.display = 'flex';
+            if (this.canInstall) {
+                installBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                        <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Установить приложение
+                `;
+            } else {
+                installBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                        <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Установить приложение (через меню браузера)
+                `;
+            }
         } else {
             installBtn.style.display = 'none';
         }
@@ -450,7 +469,96 @@ class ValutCalc {
             }
             
             this.deferredPrompt = null;
+        } else {
+            // Показываем инструкции для ручной установки
+            this.showInstallInstructions();
         }
+    }
+
+    showInstallInstructions() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isAndroid = /Android/.test(navigator.userAgent);
+        
+        let instructions = '';
+        
+        if (isIOS) {
+            instructions = `
+                <div style="text-align: left; line-height: 1.6;">
+                    <h4>Установка на iPhone/iPad:</h4>
+                    <ol>
+                        <li>Нажмите кнопку "Поделиться" в Safari</li>
+                        <li>Выберите "На экран Домой"</li>
+                        <li>Нажмите "Добавить"</li>
+                    </ol>
+                </div>
+            `;
+        } else if (isAndroid) {
+            instructions = `
+                <div style="text-align: left; line-height: 1.6;">
+                    <h4>Установка на Android:</h4>
+                    <ol>
+                        <li>Нажмите меню браузера (три точки)</li>
+                        <li>Выберите "Установить приложение" или "Добавить на главный экран"</li>
+                        <li>Подтвердите установку</li>
+                    </ol>
+                </div>
+            `;
+        } else {
+            instructions = `
+                <div style="text-align: left; line-height: 1.6;">
+                    <h4>Установка на компьютере:</h4>
+                    <ol>
+                        <li>Нажмите на иконку установки в адресной строке</li>
+                        <li>Или используйте меню браузера → "Установить приложение"</li>
+                    </ol>
+                </div>
+            `;
+        }
+        
+        // Создаем модальное окно с инструкциями
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        `;
+        
+        modal.innerHTML = `
+            <div style="
+                background: #1a1a1a;
+                border-radius: 16px;
+                padding: 24px;
+                max-width: 400px;
+                width: 100%;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+            ">
+                <h3 style="margin: 0 0 16px 0; color: #ff6b35;">Инструкции по установке</h3>
+                ${instructions}
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    width: 100%;
+                    padding: 12px;
+                    margin-top: 20px;
+                    background: #ff6b35;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    cursor: pointer;
+                ">Понятно</button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
     }
 
     changeTheme(theme) {
