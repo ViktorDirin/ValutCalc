@@ -411,9 +411,28 @@ class ValutCalc {
             installBtn.style.display = 'none';
         }
         
-        // Показываем кнопку обновления если есть обновления
-        if (this.updateAvailable) {
+        // Показываем кнопку обновления если есть обновления ИЛИ если приложение установлено
+        if (this.updateAvailable || this.isInstalled) {
             updateBtn.style.display = 'flex';
+            if (this.updateAvailable) {
+                updateBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                        <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Обновить приложение
+                `;
+            } else {
+                updateBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                        <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Проверить обновления
+                `;
+            }
         } else {
             updateBtn.style.display = 'none';
         }
