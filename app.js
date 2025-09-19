@@ -10,17 +10,39 @@ class ValutCalc {
         this.deferredPrompt = null;
         this.canInstall = false;
         this.isInstalled = false;
+        this.selectedCurrencies = ['USD', 'EUR']; // По умолчанию USD и EUR
+        this.availableCurrencies = {
+            'USD': 'US Dollar',
+            'EUR': 'Euro',
+            'AZN': 'Azerbaijani Manat',
+            'RUB': 'Russian Ruble'
+        };
         
         this.init();
     }
 
     async init() {
+        console.log('ValutCalc initializing...');
         this.loadTheme();
+        this.loadSelectedCurrencies();
         this.setupEventListeners();
         await this.loadExchangeRates();
         this.updateDisplay();
         this.checkForUpdates();
         this.setupPWAInstall();
+        
+        // Проверяем, что модальное окно настроек существует
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsBtn = document.getElementById('settingsBtn');
+        console.log('Settings modal on init:', settingsModal);
+        console.log('Settings button on init:', settingsBtn);
+        
+        // Проверяем что кнопка настроек найдена
+        if (settingsBtn) {
+            console.log('Settings button found');
+        } else {
+            console.error('Settings button not found!');
+        }
     }
 
     setupEventListeners() {
@@ -59,6 +81,7 @@ class ValutCalc {
 
         // Кнопка настроек
         document.getElementById('settingsBtn').addEventListener('click', () => {
+            console.log('Settings button clicked');
             this.openSettings();
         });
 
@@ -82,6 +105,16 @@ class ValutCalc {
             radio.addEventListener('change', (e) => {
                 this.changeTheme(e.target.value);
             });
+        });
+
+        // Кнопка настройки валют
+        document.getElementById('currencySettingsBtn').addEventListener('click', () => {
+            this.openCurrencySettings();
+        });
+
+        // Закрытие настроек валют
+        document.getElementById('currencySettingsClose').addEventListener('click', () => {
+            this.closeCurrencySettings();
         });
     }
 
@@ -112,7 +145,7 @@ class ValutCalc {
             
             loading.classList.add('hidden');
         } catch (err) {
-            console.error('Ошибка загрузки курсов:', err);
+            console.error('Error loading exchange rates:', err);
             
             // Пробуем использовать кэшированные данные
             const cachedRates = this.getCachedRates();
@@ -259,12 +292,43 @@ class ValutCalc {
     updateDisplay() {
         const value = parseFloat(this.currentValue) || 0;
         
+        // Обновляем отображение валют на основе выбранных
+        this.updateCurrencyRows();
+        
         // Обновляем все валюты
         document.querySelectorAll('.currency-row').forEach(row => {
             const currency = row.dataset.currency;
             const currencyValue = this.convertCurrency(value, this.activeCurrency, currency);
             const formattedValue = this.formatValue(currencyValue);
             row.querySelector('.currency-value').textContent = formattedValue;
+        });
+    }
+
+    updateCurrencyRows() {
+        const currencySection = document.querySelector('.currency-section');
+        currencySection.innerHTML = '';
+
+        this.selectedCurrencies.forEach(currencyCode => {
+            const currencyName = this.getCurrencyName(currencyCode);
+            const isActive = currencyCode === this.activeCurrency;
+            
+            const currencyRow = document.createElement('div');
+            currencyRow.className = `currency-row ${isActive ? 'active' : ''}`;
+            currencyRow.dataset.currency = currencyCode;
+            currencyRow.innerHTML = `
+                <div class="currency-info">
+                    <div class="currency-name">${currencyName}</div>
+                    <div class="currency-code">${currencyCode}</div>
+                </div>
+                <div class="currency-value">0</div>
+            `;
+            
+            // Добавляем обработчик клика
+            currencyRow.addEventListener('click', () => {
+                this.setActiveCurrency(currencyCode);
+            });
+            
+            currencySection.appendChild(currencyRow);
         });
     }
 
@@ -384,8 +448,15 @@ class ValutCalc {
     }
 
     openSettings() {
+        console.log('Opening settings modal');
         const modal = document.getElementById('settingsModal');
-        modal.style.display = 'flex';
+        console.log('Modal element:', modal);
+        if (modal) {
+            modal.style.display = 'flex';
+            console.log('Modal display set to flex');
+        } else {
+            console.error('Settings modal not found!');
+        }
         
         // Обновляем состояние кнопок
         this.updateSettingsButtons();
@@ -414,7 +485,7 @@ class ValutCalc {
                         <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
                         <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
                     </svg>
-                    Установить приложение
+                    Install App
                 `;
             } else {
                 installBtn.innerHTML = `
@@ -423,37 +494,33 @@ class ValutCalc {
                         <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
                         <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
                     </svg>
-                    Установить приложение (через меню браузера)
+                    Install App (via browser menu)
                 `;
             }
         } else {
             installBtn.style.display = 'none';
         }
         
-        // Показываем кнопку обновления если есть обновления ИЛИ если приложение установлено
-        if (this.updateAvailable || this.isInstalled) {
-            updateBtn.style.display = 'flex';
-            if (this.updateAvailable) {
-                updateBtn.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
-                        <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
-                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                    Обновить приложение
-                `;
-            } else {
-                updateBtn.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
-                        <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
-                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                    Проверить обновления
-                `;
-            }
+        // Всегда показываем кнопку обновления
+        updateBtn.style.display = 'flex';
+        if (this.updateAvailable) {
+            updateBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                    <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Update App
+            `;
         } else {
-            updateBtn.style.display = 'none';
+            updateBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                    <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Check for updates
+            `;
         }
     }
 
@@ -495,21 +562,21 @@ class ValutCalc {
         } else if (isAndroid) {
             instructions = `
                 <div style="text-align: left; line-height: 1.6;">
-                    <h4>Установка на Android:</h4>
+                    <h4>Installation on Android:</h4>
                     <ol>
-                        <li>Нажмите меню браузера (три точки)</li>
-                        <li>Выберите "Установить приложение" или "Добавить на главный экран"</li>
-                        <li>Подтвердите установку</li>
+                        <li>Tap browser menu (three dots)</li>
+                        <li>Select "Install App" or "Add to Home Screen"</li>
+                        <li>Confirm installation</li>
                     </ol>
                 </div>
             `;
         } else {
             instructions = `
                 <div style="text-align: left; line-height: 1.6;">
-                    <h4>Установка на компьютере:</h4>
+                    <h4>Installation on Computer:</h4>
                     <ol>
-                        <li>Нажмите на иконку установки в адресной строке</li>
-                        <li>Или используйте меню браузера → "Установить приложение"</li>
+                        <li>Tap the install icon in the address bar</li>
+                        <li>Or use browser menu → "Install App"</li>
                     </ol>
                 </div>
             `;
@@ -622,7 +689,7 @@ class ValutCalc {
                         <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
                         <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
                     </svg>
-                    Обновить приложение
+                    Update App
                 `;
                 updateBtn.disabled = false;
             }, 2000);
@@ -651,11 +718,309 @@ class ValutCalc {
             this.isInstalled = true;
         }
     }
+
+    // Методы для управления валютами
+    loadSelectedCurrencies() {
+        const saved = localStorage.getItem('valutcalc_selected_currencies');
+        if (saved) {
+            this.selectedCurrencies = JSON.parse(saved);
+        }
+    }
+
+    saveSelectedCurrencies() {
+        localStorage.setItem('valutcalc_selected_currencies', JSON.stringify(this.selectedCurrencies));
+    }
+
+    openCurrencySettings() {
+        const modal = document.getElementById('currencySettingsModal');
+        modal.style.display = 'flex';
+        this.updateCurrencySettingsDisplay();
+    }
+
+    closeCurrencySettings() {
+        const modal = document.getElementById('currencySettingsModal');
+        modal.style.display = 'none';
+    }
+
+    updateCurrencySettingsDisplay() {
+        this.updateCurrentCurrenciesList();
+        this.updateAvailableCurrenciesList();
+    }
+
+    updateCurrentCurrenciesList() {
+        const container = document.getElementById('currentCurrenciesList');
+        container.innerHTML = '';
+
+        this.selectedCurrencies.forEach((currencyCode, index) => {
+            const currencyName = this.getCurrencyName(currencyCode);
+            const currencyItem = document.createElement('div');
+            currencyItem.className = 'currency-item draggable-item';
+            currencyItem.draggable = true;
+            currencyItem.dataset.currency = currencyCode;
+            currencyItem.dataset.index = index;
+            currencyItem.innerHTML = `
+                <div class="currency-item-info">
+                    <span class="drag-handle">⋮⋮</span>
+                    <span class="currency-item-name">${currencyName}</span>
+                    <span class="currency-item-code">${currencyCode}</span>
+                </div>
+                <div class="currency-item-actions">
+                    <button class="remove-currency-btn" data-currency="${currencyCode}">×</button>
+                </div>
+            `;
+            
+            // Добавляем обработчики drag & drop
+            this.addDragListeners(currencyItem);
+            
+            // Добавляем обработчик для кнопки удаления
+            const removeBtn = currencyItem.querySelector('.remove-currency-btn');
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Предотвращаем срабатывание drag & drop
+                e.preventDefault();
+                this.removeCurrency(currencyCode);
+            });
+            
+            container.appendChild(currencyItem);
+        });
+    }
+
+    updateAvailableCurrenciesList() {
+        const container = document.getElementById('availableCurrenciesList');
+        container.innerHTML = '';
+
+        Object.entries(this.availableCurrencies).forEach(([code, name]) => {
+            const isSelected = this.selectedCurrencies.includes(code);
+            if (!isSelected) { // Показываем только не выбранные валюты
+                const currencyItem = document.createElement('div');
+                currencyItem.className = 'currency-item';
+                currencyItem.innerHTML = `
+                    <div class="currency-item-info">
+                        <span class="currency-item-name">${name}</span>
+                        <span class="currency-item-code">${code}</span>
+                    </div>
+                    <div class="currency-item-actions">
+                        <button class="add-currency-btn" data-currency="${code}">Add</button>
+                    </div>
+                `;
+                
+                // Добавляем обработчик для кнопки добавления
+                const addBtn = currencyItem.querySelector('.add-currency-btn');
+                addBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Предотвращаем срабатывание drag & drop
+                    e.preventDefault();
+                    this.addCurrency(code);
+                });
+                
+                container.appendChild(currencyItem);
+            }
+        });
+    }
+
+    getCurrencyName(code) {
+        const currencyNames = {
+            'USD': 'US Dollar',
+            'EUR': 'Euro',
+            'AZN': 'Azerbaijani Manat',
+            'RUB': 'Russian Ruble'
+        };
+        return currencyNames[code] || code;
+    }
+
+    removeCurrency(currencyCode) {
+        if (this.selectedCurrencies.length <= 1) {
+            alert('You must have at least one currency selected.');
+            return;
+        }
+
+        this.selectedCurrencies = this.selectedCurrencies.filter(code => code !== currencyCode);
+        this.saveSelectedCurrencies();
+        this.updateCurrencySettingsDisplay();
+        this.updateDisplay();
+    }
+
+    addCurrency(currencyCode) {
+        if (this.selectedCurrencies.length >= 5) {
+            alert('You can select maximum 5 currencies. Please remove one currency first.');
+            return;
+        }
+
+        this.selectedCurrencies.push(currencyCode);
+        this.saveSelectedCurrencies();
+        this.updateCurrencySettingsDisplay();
+        this.updateDisplay();
+    }
+
+    // Методы для drag & drop (desktop) и touch (mobile)
+    addDragListeners(item) {
+        const dragHandle = item.querySelector('.drag-handle');
+        
+        if (!dragHandle) return;
+
+        let draggedElement = null;
+        let touchStartY = 0;
+        let touchCurrentY = 0;
+        let isDragging = false;
+
+        // Desktop drag & drop - только на drag handle
+        if (dragHandle) {
+            dragHandle.addEventListener('dragstart', (e) => {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', item.outerHTML);
+                item.classList.add('dragging');
+            });
+        }
+
+        item.addEventListener('dragend', (e) => {
+            item.classList.remove('dragging');
+        });
+
+        item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        });
+
+        item.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            item.classList.add('drag-over');
+        });
+
+        item.addEventListener('dragleave', (e) => {
+            item.classList.remove('drag-over');
+        });
+
+        item.addEventListener('drop', (e) => {
+            e.preventDefault();
+            item.classList.remove('drag-over');
+            
+            const draggedCurrency = e.dataTransfer.getData('text/html');
+            const draggedElement = document.createElement('div');
+            draggedElement.innerHTML = draggedCurrency;
+            const draggedCurrencyCode = draggedElement.querySelector('.draggable-item').dataset.currency;
+            
+            if (draggedCurrencyCode !== item.dataset.currency) {
+                this.reorderCurrencies(draggedCurrencyCode, item.dataset.currency);
+            }
+        });
+
+        // Mobile touch events - только на drag handle
+        if (dragHandle) {
+            dragHandle.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                draggedElement = item;
+                touchStartY = e.touches[0].clientY;
+                touchCurrentY = touchStartY;
+                isDragging = false;
+                item.classList.add('touch-dragging');
+            }, { passive: false });
+
+            dragHandle.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!draggedElement) return;
+                
+                touchCurrentY = e.touches[0].clientY;
+                const deltaY = Math.abs(touchCurrentY - touchStartY);
+                
+                if (deltaY > 10) {
+                    isDragging = true;
+                    item.classList.add('dragging');
+                    
+                    // Показываем визуальную обратную связь
+                    const allItems = document.querySelectorAll('.draggable-item');
+                    allItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            const rect = otherItem.getBoundingClientRect();
+                            const itemCenterY = rect.top + rect.height / 2;
+                            
+                            if (Math.abs(touchCurrentY - itemCenterY) < rect.height / 2) {
+                                otherItem.classList.add('drag-over');
+                            } else {
+                                otherItem.classList.remove('drag-over');
+                            }
+                        }
+                    });
+                }
+            }, { passive: false });
+
+            dragHandle.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                if (!draggedElement || !isDragging) {
+                    item.classList.remove('touch-dragging');
+                    return;
+                }
+
+                // Находим элемент под курсором
+                const allItems = document.querySelectorAll('.draggable-item');
+                let targetItem = null;
+                let minDistance = Infinity;
+
+                allItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        const rect = otherItem.getBoundingClientRect();
+                        const itemCenterY = rect.top + rect.height / 2;
+                        const distance = Math.abs(touchCurrentY - itemCenterY);
+                        
+                        if (distance < minDistance && distance < rect.height) {
+                            minDistance = distance;
+                            targetItem = otherItem;
+                        }
+                    }
+                });
+
+                // Убираем все классы
+                allItems.forEach(otherItem => {
+                    otherItem.classList.remove('drag-over', 'dragging', 'touch-dragging');
+                });
+
+                // Выполняем переупорядочивание
+                if (targetItem && targetItem.dataset.currency !== item.dataset.currency) {
+                    this.reorderCurrencies(item.dataset.currency, targetItem.dataset.currency);
+                }
+
+                draggedElement = null;
+                isDragging = false;
+            }, { passive: false });
+        }
+    }
+
+    reorderCurrencies(draggedCurrency, targetCurrency) {
+        const draggedIndex = this.selectedCurrencies.indexOf(draggedCurrency);
+        const targetIndex = this.selectedCurrencies.indexOf(targetCurrency);
+        
+        if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
+            // Создаем новый массив
+            const newCurrencies = [...this.selectedCurrencies];
+            
+            // Удаляем перетаскиваемую валюту
+            newCurrencies.splice(draggedIndex, 1);
+            
+            // Вычисляем новую позицию
+            let newTargetIndex = targetIndex;
+            if (draggedIndex < targetIndex) {
+                // Перетаскиваем вниз - позиция уменьшается на 1
+                newTargetIndex = targetIndex - 1;
+            } else {
+                // Перетаскиваем вверх - позиция остается той же
+                newTargetIndex = targetIndex;
+            }
+            
+            // Вставляем валюту на новую позицию
+            newCurrencies.splice(newTargetIndex, 0, draggedCurrency);
+            
+            // Обновляем массив
+            this.selectedCurrencies = newCurrencies;
+            
+            // Сохраняем новый порядок
+            this.saveSelectedCurrencies();
+            this.updateCurrencySettingsDisplay();
+            this.updateDisplay();
+        }
+    }
 }
 
 // Инициализация приложения
+let app;
 document.addEventListener('DOMContentLoaded', () => {
-    new ValutCalc();
+    app = new ValutCalc();
 });
 
 // Service Worker регистрация

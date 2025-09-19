@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ValutCalc - Конвертер валют</title>
+    <title>ValutCalc - Currency Converter</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta name="theme-color" content="#1a1a1a">
-    <meta name="description" content="Конвертер валют с поддержкой USD, EUR, AZN">
+    <meta name="description" content="Currency converter with support for USD, EUR, AZN">
 </head>
 <body>
     <div class="app">
         <!-- Верхняя панель с кнопками -->
         <div class="top-panel">
-            <button class="theme-toggle" id="themeToggle" title="Сменить тему">
+            <button class="theme-toggle" id="themeToggle" title="Change theme">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -24,7 +24,7 @@
                 <!-- Кнопка обновления перенесена в настройки -->
             </div>
             
-            <button class="settings-btn" id="settingsBtn" title="Настройки">
+            <button class="settings-btn" id="settingsBtn" title="Settings">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2"/>
                     <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
@@ -36,25 +36,35 @@
         <div class="currency-section">
             <div class="currency-row active" data-currency="USD">
                 <div class="currency-info">
-                    <div class="currency-name">Доллар США</div>
+                    <div class="currency-name">US Dollar</div>
                     <div class="currency-code">USD</div>
                 </div>
                 <div class="currency-value">1</div>
             </div>
             <div class="currency-row" data-currency="EUR">
                 <div class="currency-info">
-                    <div class="currency-name">Евро</div>
+                    <div class="currency-name">Euro</div>
                     <div class="currency-code">EUR</div>
                 </div>
                 <div class="currency-value">0</div>
             </div>
             <div class="currency-row" data-currency="AZN">
                 <div class="currency-info">
-                    <div class="currency-name">Азербайджанский манат</div>
+                    <div class="currency-name">Azerbaijani Manat</div>
                     <div class="currency-code">AZN</div>
                 </div>
                 <div class="currency-value">0</div>
             </div>
+        </div>
+
+        <!-- Кнопка настройки валют -->
+        <div class="currency-settings-section">
+            <button class="currency-settings-btn" id="currencySettingsBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span>Currency Settings</span>
+            </button>
         </div>
 
         <!-- Цифровая клавиатура -->
@@ -101,35 +111,66 @@
             </div>
         </div>
 
-        <!-- Статус загрузки -->
+        <!-- Loading status -->
         <div class="loading" id="loading">
             <div class="loading-spinner"></div>
-            <span>Загрузка курсов валют...</span>
+            <span>Loading exchange rates...</span>
         </div>
 
-        <!-- Ошибка загрузки -->
+        <!-- Loading error -->
         <div class="error" id="error" style="display: none;">
-            <span>Ошибка загрузки курсов. Используются кэшированные данные.</span>
+            <span>Error loading rates. Using cached data.</span>
+        </div>
+
+        <!-- Модальное окно настроек валют -->
+        <div class="currency-settings-modal" id="currencySettingsModal" style="display: none;">
+            <div class="currency-settings-content">
+                <div class="currency-settings-header">
+                    <h2>Currency Settings</h2>
+                    <button class="currency-settings-close" id="currencySettingsClose">×</button>
+                </div>
+                
+                <div class="currency-settings-body">
+                    <!-- Текущие валюты -->
+                    <div class="current-currencies-section">
+                        <h3>Current Currencies</h3>
+                        <div class="current-currencies-list" id="currentCurrenciesList">
+                            <!-- Будет заполнено динамически -->
+                        </div>
+                    </div>
+                    
+                    <!-- Разделительная черта -->
+                    <div class="currency-divider"></div>
+                    
+                    <!-- Доступные валюты -->
+                    <div class="available-currencies-section">
+                        <h3>Available Currencies</h3>
+                        <div class="available-currencies-list" id="availableCurrenciesList">
+                            <!-- Будет заполнено динамически -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Модальное окно настроек -->
         <div class="settings-modal" id="settingsModal" style="display: none;">
             <div class="settings-content">
                 <div class="settings-header">
-                    <h2>Настройки</h2>
+                    <h2>Settings</h2>
                     <button class="settings-close" id="settingsClose">×</button>
                 </div>
                 
                 <div class="settings-body">
                     <div class="settings-section">
-                        <h3>Приложение</h3>
+                        <h3>Application</h3>
                         <button class="install-btn" id="installBtn" style="display: none;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
                                 <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
                                 <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
                             </svg>
-                            Установить приложение
+                            Install App
                         </button>
                         
                         <button class="update-btn-settings" id="updateBtnSettings" style="display: none;">
@@ -138,36 +179,36 @@
                                 <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
                                 <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
                             </svg>
-                            Обновить приложение
+                            Update App
                         </button>
                     </div>
                     
                     <div class="settings-section">
-                        <h3>Тема</h3>
+                        <h3>Theme</h3>
                         <div class="theme-options">
                             <label class="theme-option">
                                 <input type="radio" name="theme" value="dark" checked>
                                 <span class="theme-preview dark"></span>
-                                <span>Темная</span>
+                                <span>Dark</span>
                             </label>
                             <label class="theme-option">
                                 <input type="radio" name="theme" value="light">
                                 <span class="theme-preview light"></span>
-                                <span>Светлая</span>
+                                <span>Light</span>
                             </label>
                         </div>
                     </div>
                     
                     <div class="settings-section">
-                        <h3>О приложении</h3>
+                        <h3>About</h3>
                         <p>ValutCalc v1.0.0</p>
-                        <p>Конвертер валют с поддержкой PWA</p>
+                        <p>Currency converter with PWA support</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=16"></script>
 </body>
 </html>

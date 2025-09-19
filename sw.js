@@ -1,6 +1,6 @@
-const CACHE_NAME = 'valutcalc-v1.0.0';
-const STATIC_CACHE = 'valutcalc-static-v1.0.0';
-const DYNAMIC_CACHE = 'valutcalc-dynamic-v1.0.0';
+const CACHE_NAME = 'valutcalc-v1.0.1';
+const STATIC_CACHE = 'valutcalc-static-v1.0.1';
+const DYNAMIC_CACHE = 'valutcalc-dynamic-v1.0.1';
 
 // Файлы для кэширования
 const STATIC_FILES = [
@@ -103,7 +103,25 @@ self.addEventListener('fetch', event => {
         event.respondWith(
             caches.match(request)
                 .then(response => {
+                    // Если файл есть в кэше, проверяем его актуальность
                     if (response) {
+                        // Для файлов с версиями (app.js?v=12) всегда запрашиваем свежую версию
+                        if (request.url.includes('?v=')) {
+                            console.log('SW: Файл с версией, запрашиваем свежую версию:', request.url);
+                            return fetch(request)
+                                .then(fetchResponse => {
+                                    if (fetchResponse.ok) {
+                                        const responseClone = fetchResponse.clone();
+                                        caches.open(STATIC_CACHE)
+                                            .then(cache => {
+                                                cache.put(request, responseClone);
+                                            });
+                                    }
+                                    return fetchResponse;
+                                })
+                                .catch(() => response); // Fallback на кэш если fetch не удался
+                        }
+                        
                         console.log('SW: Статический файл из кэша:', request.url);
                         return response;
                     }

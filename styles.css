@@ -151,6 +151,317 @@ body.light-theme .update-btn:hover {
     to { transform: rotate(360deg); }
 }
 
+/* Кнопка настройки валют */
+.currency-settings-section {
+    padding: 20px 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.currency-settings-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 12px;
+    color: #ff6b35;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.currency-settings-btn:hover {
+    background: rgba(255, 107, 53, 0.2);
+    transform: translateY(-2px);
+}
+
+body.light-theme .currency-settings-btn {
+    background: rgba(255, 107, 53, 0.05);
+    border-color: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+}
+
+body.light-theme .currency-settings-btn:hover {
+    background: rgba(255, 107, 53, 0.1);
+}
+
+/* Модальное окно настроек валют */
+.currency-settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.currency-settings-content {
+    background: #1a1a1a;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.light-theme .currency-settings-content {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.currency-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.currency-settings-header h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+body.light-theme .currency-settings-header h2 {
+    color: #333333;
+}
+
+.currency-settings-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+body.light-theme .currency-settings-close {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333333;
+}
+
+.currency-settings-close:hover {
+    background: rgba(255, 107, 53, 0.2);
+}
+
+.currency-settings-body {
+    padding: 20px;
+}
+
+.current-currencies-section,
+.available-currencies-section {
+    margin-bottom: 24px;
+}
+
+.current-currencies-section h3,
+.available-currencies-section h3 {
+    margin: 0 0 12px 0;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+body.light-theme .current-currencies-section h3,
+body.light-theme .available-currencies-section h3 {
+    color: #333333;
+}
+
+.currency-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 20px 0;
+}
+
+body.light-theme .currency-divider {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Список валют */
+.current-currencies-list,
+.available-currencies-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.currency-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.light-theme .currency-item {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.currency-item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.currency-item-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+body.light-theme .currency-item-name {
+    color: #333333;
+}
+
+.currency-item-code {
+    font-size: 12px;
+    color: #cccccc;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+body.light-theme .currency-item-code {
+    color: #666666;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.currency-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.remove-currency-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.remove-currency-btn:hover {
+    background: rgba(255, 107, 53, 0.3);
+}
+
+.add-currency-btn {
+    padding: 6px 12px;
+    border: none;
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.add-currency-btn:hover {
+    background: rgba(255, 107, 53, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Drag & Drop стили */
+.draggable-item {
+    cursor: move;
+    transition: all 0.3s ease;
+}
+
+.draggable-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.draggable-item.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+    z-index: 1000;
+}
+
+.draggable-item.drag-over {
+    border: 2px dashed #ff6b35;
+    background: rgba(255, 107, 53, 0.1);
+}
+
+.drag-handle {
+    color: #cccccc;
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 8px;
+    cursor: grab;
+    user-select: none;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+body.light-theme .drag-handle {
+    color: #666666;
+}
+
+body.light-theme .draggable-item.drag-over {
+    border-color: #ff6b35;
+    background: rgba(255, 107, 53, 0.05);
+}
+
+/* Touch dragging стили */
+.draggable-item.touch-dragging {
+    opacity: 0.8;
+    transform: scale(1.05);
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Улучшенные стили для мобильных устройств */
+@media (max-width: 768px) {
+    .draggable-item {
+        padding: 16px;
+        min-height: 60px;
+    }
+    
+    .drag-handle {
+        font-size: 20px;
+        margin-right: 12px;
+    }
+    
+    .currency-item-name {
+        font-size: 16px;
+    }
+    
+    .currency-item-code {
+        font-size: 14px;
+        padding: 4px 10px;
+    }
+}
+
 /* Модальное окно настроек */
 .settings-modal {
     position: fixed;
@@ -431,16 +742,17 @@ body.light-theme .currency-value {
     font-size: 14px;
     color: #cccccc;
     font-weight: 400;
-    margin-top: 4px;
+    margin-top: 0;
     line-height: 1;
 }
 
 .currency-info {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
     flex: 1;
+    gap: 8px;
 }
 
 .currency-value {
@@ -449,9 +761,10 @@ body.light-theme .currency-value {
     color: #ff6b35;
     font-variant-numeric: tabular-nums;
     text-align: right;
-    min-width: 120px;
+    min-width: 80px;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
 }
 
 /* Секция клавиатуры */
@@ -741,12 +1054,13 @@ body.light-theme .delete-btn:hover {
     
     .currency-code {
         font-size: 12px;
-        margin-left: 8px;
+        margin-top: 0;
     }
     
     .currency-value {
         font-size: 16px;
         font-weight: 600;
+        min-width: 60px;
     }
     
     .keypad-section {
@@ -811,11 +1125,12 @@ body.light-theme .delete-btn:hover {
     
     .currency-code {
         font-size: 11px;
-        margin-left: 6px;
+        margin-top: 0;
     }
     
     .currency-value {
         font-size: 15px;
+        min-width: 50px;
     }
     
     .keypad-section {
@@ -883,6 +1198,7 @@ body.light-theme .delete-btn:hover {
     
     .currency-value {
         font-size: 14px;
+        min-width: 45px;
     }
     
     .key {
