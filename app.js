@@ -11,11 +11,22 @@ class ValutCalc {
         this.canInstall = false;
         this.isInstalled = false;
         this.selectedCurrencies = ['USD', 'EUR']; // По умолчанию USD и EUR
+        this.hasUserInput = false; // Флаг для отслеживания начала ввода пользователем
         this.availableCurrencies = {
             'USD': 'US Dollar',
             'EUR': 'Euro',
             'AZN': 'Azerbaijani Manat',
-            'RUB': 'Russian Ruble'
+            'RUB': 'Russian Ruble',
+            'IDR': 'Indonesian Rupiah',
+            'KRW': 'South Korean Won',
+            'JPY': 'Japanese Yen',
+            'CAD': 'Canadian Dollar',
+            'BYN': 'Belarusian Ruble',
+            'UAH': 'Ukrainian Hryvnia',
+            'CNY': 'Chinese Yuan',
+            'TRY': 'Turkish Lira',
+            'KZT': 'Kazakhstani Tenge',
+            'UZS': 'Uzbekistani Som'
         };
         
         this.init();
@@ -198,6 +209,8 @@ class ValutCalc {
 
     setActiveCurrency(currency) {
         this.activeCurrency = currency;
+        this.currentValue = '1';
+        this.hasUserInput = false; // Сбрасываем флаг при смене валюты
         
         // Обновляем активную строку
         document.querySelectorAll('.currency-row').forEach(row => {
@@ -237,13 +250,16 @@ class ValutCalc {
     }
 
     addDigit(digit) {
-        // Если текущее значение "1" (по умолчанию), заменяем его на новую цифру
-        if (this.currentValue === '1') {
+        // Если пользователь еще не начинал вводить (поле содержит дефолтную "1")
+        if (!this.hasUserInput && this.currentValue === '1') {
             this.currentValue = digit;
+            this.hasUserInput = true;
         } else if (this.currentValue === '0') {
             this.currentValue = digit;
+            this.hasUserInput = true;
         } else {
             this.currentValue += digit;
+            this.hasUserInput = true;
         }
         this.updateDisplay();
     }
@@ -279,6 +295,7 @@ class ValutCalc {
 
     clearAll() {
         this.currentValue = '1';
+        this.hasUserInput = false; // Сбрасываем флаг при очистке
         this.updateDisplay();
     }
 
@@ -359,25 +376,25 @@ class ValutCalc {
 
     loadTheme() {
         // Загружаем сохраненную тему из localStorage
-        const savedTheme = localStorage.getItem('valutcalc_theme');
-        if (savedTheme === 'light') {
-            this.isDarkTheme = false;
-            document.body.classList.add('light-theme');
-        } else {
-            this.isDarkTheme = true;
-            document.body.classList.remove('light-theme');
+        const savedTheme = localStorage.getItem('valutcalc_theme') || 'dark';
+        this.changeTheme(savedTheme);
+        
+        // Устанавливаем правильный radio button
+        const themeRadio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
+        if (themeRadio) {
+            themeRadio.checked = true;
         }
     }
 
     toggleTheme() {
-        this.isDarkTheme = !this.isDarkTheme;
+        // Получаем текущую тему
+        const currentTheme = localStorage.getItem('valutcalc_theme') || 'dark';
         
-        if (this.isDarkTheme) {
-            document.body.classList.remove('light-theme');
-            localStorage.setItem('valutcalc_theme', 'dark');
+        // Умное переключение: темные темы → Light, Light → Dark
+        if (currentTheme === 'light') {
+            this.changeTheme('dark');
         } else {
-            document.body.classList.add('light-theme');
-            localStorage.setItem('valutcalc_theme', 'light');
+            this.changeTheme('light');
         }
     }
 
@@ -478,25 +495,14 @@ class ValutCalc {
         // Всегда показываем кнопку установки если приложение не установлено
         if (!this.isInstalled) {
             installBtn.style.display = 'flex';
-            if (this.canInstall) {
-                installBtn.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
-                        <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
-                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                    Install App
-                `;
-            } else {
-                installBtn.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
-                        <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
-                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                    Install App (via browser menu)
-                `;
-            }
+            installBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                    <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                    <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Install App
+            `;
         } else {
             installBtn.style.display = 'none';
         }
@@ -629,15 +635,31 @@ class ValutCalc {
     }
 
     changeTheme(theme) {
+        // Удаляем все классы тем
+        document.body.classList.remove('light-theme', 'green-theme', 'blue-theme', 'purple-theme', 'red-theme');
+        
+        // Устанавливаем новую тему
         if (theme === 'light') {
             this.isDarkTheme = false;
             document.body.classList.add('light-theme');
-            localStorage.setItem('valutcalc_theme', 'light');
-        } else {
+        } else if (theme === 'green') {
             this.isDarkTheme = true;
-            document.body.classList.remove('light-theme');
-            localStorage.setItem('valutcalc_theme', 'dark');
+            document.body.classList.add('green-theme');
+        } else if (theme === 'blue') {
+            this.isDarkTheme = true;
+            document.body.classList.add('blue-theme');
+        } else if (theme === 'purple') {
+            this.isDarkTheme = true;
+            document.body.classList.add('purple-theme');
+        } else if (theme === 'red') {
+            this.isDarkTheme = true;
+            document.body.classList.add('red-theme');
+        } else {
+            // По умолчанию темная тема
+            this.isDarkTheme = true;
         }
+        
+        localStorage.setItem('valutcalc_theme', theme);
     }
 
     async updateApp() {
@@ -998,10 +1020,8 @@ class ValutCalc {
             if (draggedIndex < targetIndex) {
                 // Перетаскиваем вниз - позиция уменьшается на 1
                 newTargetIndex = targetIndex - 1;
-            } else {
-                // Перетаскиваем вверх - позиция остается той же
-                newTargetIndex = targetIndex;
             }
+            // Если перетаскиваем вверх - позиция остается той же
             
             // Вставляем валюту на новую позицию
             newCurrencies.splice(newTargetIndex, 0, draggedCurrency);

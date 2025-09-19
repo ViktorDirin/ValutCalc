@@ -608,6 +608,29 @@ body.light-theme .update-btn-settings:hover {
 .theme-options {
     display: flex;
     gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Стилизация скроллбара для WebKit браузеров */
+.theme-options::-webkit-scrollbar {
+    height: 6px;
+}
+
+.theme-options::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.theme-options::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.theme-options::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .theme-option {
@@ -658,6 +681,26 @@ body.light-theme .theme-option:hover {
     background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
 }
 
+.theme-preview.green {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 2px solid #4ade80;
+}
+
+.theme-preview.blue {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 2px solid #3b82f6;
+}
+
+.theme-preview.purple {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 2px solid #a855f7;
+}
+
+.theme-preview.red {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 2px solid #ef4444;
+}
+
 .theme-option span {
     color: #cccccc;
     font-size: 12px;
@@ -666,6 +709,19 @@ body.light-theme .theme-option:hover {
 
 body.light-theme .theme-option span {
     color: #666666;
+}
+
+/* Светлая тема для скроллбара тем */
+body.light-theme .theme-options {
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+}
+
+body.light-theme .theme-options::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+body.light-theme .theme-options::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
 }
 
 /* Секция валют */
@@ -994,24 +1050,7 @@ body.light-theme .delete-btn:hover {
 }
 
 /* Анимации */
-.currency-row {
-    animation: slideInUp 0.5s ease-out;
-}
-
-.currency-row:nth-child(1) { animation-delay: 0.1s; }
-.currency-row:nth-child(2) { animation-delay: 0.2s; }
-.currency-row:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+/* Анимация убрана для предотвращения дерганья */
 
 .keypad {
     animation: slideInUp 0.5s ease-out 0.4s both;
@@ -1226,4 +1265,331 @@ body.light-theme .delete-btn:hover {
         -ms-user-select: none;
         user-select: none;
     }
+}
+
+/* ===== НОВЫЕ ТЕМЫ ОФОРМЛЕНИЯ ===== */
+
+/* Зеленая тема */
+body.green-theme {
+    background-color: #0f1419;
+    color: #e5e7eb;
+}
+
+body.green-theme .app {
+    background: linear-gradient(135deg, #0f1419 0%, #1f2937 100%);
+}
+
+body.green-theme .top-panel {
+    background: rgba(15, 20, 25, 0.8);
+    border-bottom: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+body.green-theme .theme-toggle,
+body.green-theme .settings-btn {
+    background: rgba(74, 222, 128, 0.1);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+body.green-theme .theme-toggle:hover,
+body.green-theme .settings-btn:hover {
+    background: rgba(74, 222, 128, 0.2);
+}
+
+body.green-theme .currency-row.active {
+    border-color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+}
+
+body.green-theme .currency-value {
+    color: #4ade80;
+}
+
+body.green-theme .currency-settings-btn {
+    background: rgba(74, 222, 128, 0.05);
+    border-color: rgba(74, 222, 128, 0.2);
+    color: #4ade80;
+}
+
+body.green-theme .currency-settings-btn:hover {
+    background: rgba(74, 222, 128, 0.1);
+}
+
+body.green-theme .install-btn,
+body.green-theme .update-btn-settings {
+    background: rgba(74, 222, 128, 0.1);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+body.green-theme .install-btn:hover,
+body.green-theme .update-btn-settings:hover {
+    background: rgba(74, 222, 128, 0.2);
+}
+
+body.green-theme .delete-btn {
+    background: rgba(74, 222, 128, 0.1);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+body.green-theme .delete-btn:hover {
+    background: rgba(74, 222, 128, 0.2);
+}
+
+/* Синяя тема */
+body.blue-theme {
+    background-color: #0f172a;
+    color: #e2e8f0;
+}
+
+body.blue-theme .app {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+body.blue-theme .top-panel {
+    background: rgba(15, 23, 42, 0.8);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+body.blue-theme .theme-toggle,
+body.blue-theme .settings-btn {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+body.blue-theme .theme-toggle:hover,
+body.blue-theme .settings-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+body.blue-theme .currency-row.active {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+body.blue-theme .currency-value {
+    color: #3b82f6;
+}
+
+body.blue-theme .currency-settings-btn {
+    background: rgba(59, 130, 246, 0.05);
+    border-color: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+body.blue-theme .currency-settings-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+body.blue-theme .install-btn,
+body.blue-theme .update-btn-settings {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+body.blue-theme .install-btn:hover,
+body.blue-theme .update-btn-settings:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+body.blue-theme .delete-btn {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+body.blue-theme .delete-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+/* Фиолетовая тема */
+body.purple-theme {
+    background-color: #1a0b2e;
+    color: #e9d5ff;
+}
+
+body.purple-theme .app {
+    background: linear-gradient(135deg, #1a0b2e 0%, #2d1b69 100%);
+}
+
+body.purple-theme .top-panel {
+    background: rgba(26, 11, 46, 0.8);
+    border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+body.purple-theme .theme-toggle,
+body.purple-theme .settings-btn {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+body.purple-theme .theme-toggle:hover,
+body.purple-theme .settings-btn:hover {
+    background: rgba(168, 85, 247, 0.2);
+}
+
+body.purple-theme .currency-row.active {
+    border-color: #a855f7;
+    background: rgba(168, 85, 247, 0.1);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+}
+
+body.purple-theme .currency-value {
+    color: #a855f7;
+}
+
+body.purple-theme .currency-settings-btn {
+    background: rgba(168, 85, 247, 0.05);
+    border-color: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+}
+
+body.purple-theme .currency-settings-btn:hover {
+    background: rgba(168, 85, 247, 0.1);
+}
+
+body.purple-theme .install-btn,
+body.purple-theme .update-btn-settings {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+body.purple-theme .install-btn:hover,
+body.purple-theme .update-btn-settings:hover {
+    background: rgba(168, 85, 247, 0.2);
+}
+
+body.purple-theme .delete-btn {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+body.purple-theme .delete-btn:hover {
+    background: rgba(168, 85, 247, 0.2);
+}
+
+/* Красная тема */
+body.red-theme {
+    background-color: #1f0f0f;
+    color: #fecaca;
+}
+
+body.red-theme .app {
+    background: linear-gradient(135deg, #1f0f0f 0%, #3f1f1f 100%);
+}
+
+body.red-theme .top-panel {
+    background: rgba(31, 15, 15, 0.8);
+    border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+body.red-theme .theme-toggle,
+body.red-theme .settings-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+body.red-theme .theme-toggle:hover,
+body.red-theme .settings-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+body.red-theme .currency-row.active {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+body.red-theme .currency-value {
+    color: #ef4444;
+}
+
+body.red-theme .currency-settings-btn {
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+body.red-theme .currency-settings-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+body.red-theme .install-btn,
+body.red-theme .update-btn-settings {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+body.red-theme .install-btn:hover,
+body.red-theme .update-btn-settings:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+body.red-theme .delete-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+body.red-theme .delete-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+/* Скроллбар для всех новых тем */
+body.green-theme .theme-options {
+    scrollbar-color: rgba(74, 222, 128, 0.3) transparent;
+}
+
+body.green-theme .theme-options::-webkit-scrollbar-thumb {
+    background: rgba(74, 222, 128, 0.3);
+}
+
+body.green-theme .theme-options::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 222, 128, 0.5);
+}
+
+body.blue-theme .theme-options {
+    scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
+}
+
+body.blue-theme .theme-options::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3);
+}
+
+body.blue-theme .theme-options::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.5);
+}
+
+body.purple-theme .theme-options {
+    scrollbar-color: rgba(168, 85, 247, 0.3) transparent;
+}
+
+body.purple-theme .theme-options::-webkit-scrollbar-thumb {
+    background: rgba(168, 85, 247, 0.3);
+}
+
+body.purple-theme .theme-options::-webkit-scrollbar-thumb:hover {
+    background: rgba(168, 85, 247, 0.5);
+}
+
+body.red-theme .theme-options {
+    scrollbar-color: rgba(239, 68, 68, 0.3) transparent;
+}
+
+body.red-theme .theme-options::-webkit-scrollbar-thumb {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+body.red-theme .theme-options::-webkit-scrollbar-thumb:hover {
+    background: rgba(239, 68, 68, 0.5);
 }
