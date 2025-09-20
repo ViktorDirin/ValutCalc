@@ -26,7 +26,8 @@ class ValutCalc {
             'CNY': 'Chinese Yuan',
             'TRY': 'Turkish Lira',
             'KZT': 'Kazakhstani Tenge',
-            'UZS': 'Uzbekistani Som'
+            'UZS': 'Uzbekistani Som',
+            'VND': 'Vietnamese Dong'
         };
         
         this.init();
@@ -492,8 +493,19 @@ class ValutCalc {
         const installBtn = document.getElementById('installBtn');
         const updateBtn = document.getElementById('updateBtnSettings');
         
-        // Всегда показываем кнопку установки если приложение не установлено
-        if (!this.isInstalled) {
+        // Показываем кнопку установки если приложение не установлено И можно установить
+        if (!this.isInstalled && (this.canInstall || this.deferredPrompt)) {
+            installBtn.style.display = 'flex';
+            installBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
+                    <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
+                    <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Install App
+            `;
+        } else if (!this.isInstalled) {
+            // Если нельзя установить автоматически, показываем кнопку с инструкциями
             installBtn.style.display = 'flex';
             installBtn.innerHTML = `
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -739,6 +751,21 @@ class ValutCalc {
         if (window.matchMedia('(display-mode: standalone)').matches) {
             this.isInstalled = true;
         }
+
+        // Дополнительная проверка для Android - если событие beforeinstallprompt не сработало
+        setTimeout(() => {
+            if (!this.isInstalled && !this.canInstall) {
+                // Проверяем, поддерживает ли браузер PWA
+                const isAndroid = /Android/.test(navigator.userAgent);
+                const isChrome = /Chrome/.test(navigator.userAgent);
+                
+                if (isAndroid && isChrome) {
+                    // На Android Chrome всегда можно установить PWA вручную
+                    this.canInstall = true;
+                    console.log('Android Chrome detected - manual install available');
+                }
+            }
+        }, 2000);
     }
 
     // Методы для управления валютами
@@ -839,13 +866,7 @@ class ValutCalc {
     }
 
     getCurrencyName(code) {
-        const currencyNames = {
-            'USD': 'US Dollar',
-            'EUR': 'Euro',
-            'AZN': 'Azerbaijani Manat',
-            'RUB': 'Russian Ruble'
-        };
-        return currencyNames[code] || code;
+        return this.availableCurrencies[code] || code;
     }
 
     removeCurrency(currencyCode) {
