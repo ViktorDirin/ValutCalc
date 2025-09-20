@@ -144,6 +144,24 @@
             </div>
         </div>
 
+        <!-- Контекстное меню для валют -->
+        <div class="currency-context-menu" id="currencyContextMenu">
+            <div class="currency-context-menu-item" id="copyValueBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M19 3H9a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Copy Value
+            </div>
+            <div class="currency-context-menu-item" id="pasteValueBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" stroke="currentColor" stroke-width="2"/>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Paste Value
+            </div>
+        </div>
+
         <!-- Модальное окно настроек -->
         <div class="settings-modal" id="settingsModal" style="display: none;">
             <div class="settings-content">
@@ -246,6 +264,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=30"></script>
+    <script src="app.js?v=33"></script>
 </body>
 </html>

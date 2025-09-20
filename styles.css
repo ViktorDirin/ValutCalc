@@ -1673,3 +1673,91 @@ body.red-theme .theme-options::-webkit-scrollbar-thumb {
 body.red-theme .theme-options::-webkit-scrollbar-thumb:hover {
     background: rgba(239, 68, 68, 0.5);
 }
+
+/* Контекстное меню для валют */
+.currency-context-menu {
+    position: fixed;
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 8px 0;
+    z-index: 1000;
+    min-width: 160px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    display: none;
+    animation: contextMenuAppear 0.2s ease;
+}
+
+.currency-context-menu.show {
+    display: block;
+}
+
+.currency-context-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.currency-context-menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.currency-context-menu-item:active {
+    background: rgba(255, 107, 53, 0.2);
+}
+
+.currency-context-menu-item svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 12px;
+    opacity: 0.8;
+}
+
+.currency-context-menu-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.currency-context-menu-item.disabled:hover {
+    background: transparent;
+}
+
+/* Светлая тема для контекстного меню */
+body.light-theme .currency-context-menu {
+    background: rgba(245, 245, 245, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #333333;
+}
+
+body.light-theme .currency-context-menu-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .currency-context-menu-item:active {
+    background: rgba(255, 107, 53, 0.1);
+}
+
+/* Индикатор долгого нажатия */
+.currency-row.long-press-active {
+    transform: scale(0.98);
+    background: rgba(255, 107, 53, 0.1);
+    border-radius: 8px;
+}
+
+/* Анимация для контекстного меню */
+@keyframes contextMenuAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}

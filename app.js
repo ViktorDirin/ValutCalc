@@ -66,6 +66,9 @@ class ValutCalc {
             row.addEventListener('click', () => {
                 this.setActiveCurrency(row.dataset.currency);
             });
+            
+            // Долгое нажатие для контекстного меню
+            this.setupLongPress(row);
         });
 
         // Цифровая клавиатура
@@ -136,6 +139,23 @@ class ValutCalc {
         document.getElementById('currencySettingsClose').addEventListener('click', () => {
             this.closeCurrencySettings();
         });
+
+        // Контекстное меню для валют
+        document.getElementById('copyValueBtn').addEventListener('click', () => {
+            this.copyCurrencyValue();
+        });
+
+        document.getElementById('pasteValueBtn').addEventListener('click', () => {
+            this.pasteCurrencyValue();
+        });
+
+        // Закрытие контекстного меню при клике вне его
+        document.addEventListener('click', (e) => {
+            const contextMenu = document.getElementById('currencyContextMenu');
+            if (contextMenu && !contextMenu.contains(e.target) && !e.target.closest('.currency-row')) {
+                this.hideContextMenu();
+            }
+        });
     }
 
     async loadExchangeRates() {
@@ -183,7 +203,7 @@ class ValutCalc {
                     AZN: 1.7
                 };
                 error.style.display = 'block';
-                error.textContent = 'Используются примерные курсы. Проверьте подключение к интернету.';
+                error.textContent = 'Using approximate rates. Check your internet connection.';
             }
             
             loading.classList.add('hidden');
@@ -207,7 +227,7 @@ class ValutCalc {
             };
             localStorage.setItem('valutcalc_rates', JSON.stringify(data));
         } catch (err) {
-            console.warn('Не удалось сохранить курсы в кэш:', err);
+            console.warn('Failed to save rates to cache:', err);
         }
     }
 
@@ -354,6 +374,9 @@ class ValutCalc {
                 this.setActiveCurrency(currencyCode);
             });
             
+            // Добавляем долгое нажатие для контекстного меню
+            this.setupLongPress(currencyRow);
+            
             currencySection.appendChild(currencyRow);
         });
     }
@@ -426,7 +449,7 @@ class ValutCalc {
                     });
                 }
             } catch (error) {
-                console.log('Ошибка проверки обновлений:', error);
+                console.log('Error checking for updates:', error);
             }
         }
     }
@@ -446,7 +469,7 @@ class ValutCalc {
         notification.className = 'update-notification';
         notification.innerHTML = `
             <div class="update-notification-content">
-                <span>Доступно обновление приложения</span>
+                <span>App update available</span>
                 <button class="update-notification-btn" onclick="this.parentElement.parentElement.remove()">×</button>
             </div>
         `;
@@ -573,7 +596,7 @@ class ValutCalc {
             const { outcome } = await this.deferredPrompt.userChoice;
             
             if (outcome === 'accepted') {
-                console.log('PWA установлено');
+                console.log('PWA installed');
                 this.isInstalled = true;
                 this.updateSettingsButtons();
             }
@@ -594,11 +617,11 @@ class ValutCalc {
         if (isIOS) {
             instructions = `
                 <div style="text-align: left; line-height: 1.6;">
-                    <h4>Установка на iPhone/iPad:</h4>
+                    <h4>Installation on iPhone/iPad:</h4>
                     <ol>
-                        <li>Нажмите кнопку "Поделиться" в Safari</li>
-                        <li>Выберите "На экран Домой"</li>
-                        <li>Нажмите "Добавить"</li>
+                        <li>Tap the "Share" button in Safari</li>
+                        <li>Select "Add to Home Screen"</li>
+                        <li>Tap "Add"</li>
                     </ol>
                 </div>
             `;
@@ -652,7 +675,7 @@ class ValutCalc {
                 border: 1px solid rgba(255, 255, 255, 0.1);
                 color: #ffffff;
             ">
-                <h3 style="margin: 0 0 16px 0; color: #ff6b35;">Инструкции по установке</h3>
+                <h3 style="margin: 0 0 16px 0; color: #ff6b35;">Installation Instructions</h3>
                 ${instructions}
                 <button onclick="this.parentElement.parentElement.remove()" style="
                     width: 100%;
@@ -664,7 +687,7 @@ class ValutCalc {
                     border-radius: 8px;
                     font-weight: 600;
                     cursor: pointer;
-                ">Понятно</button>
+                ">Got it</button>
             </div>
         `;
         
@@ -713,7 +736,7 @@ class ValutCalc {
                 <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
                 <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
             </svg>
-            Обновление...
+            Updating...
         `;
         updateBtn.disabled = true;
 
@@ -739,7 +762,7 @@ class ValutCalc {
                     <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
                     <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
                 </svg>
-                Ошибка
+                Error
             `;
             setTimeout(() => {
                 updateBtn.innerHTML = `
@@ -761,7 +784,7 @@ class ValutCalc {
             e.preventDefault();
             this.deferredPrompt = e;
             this.canInstall = true;
-            console.log('PWA можно установить');
+            console.log('PWA can be installed');
         });
 
         // Обработка события appinstalled
@@ -769,7 +792,7 @@ class ValutCalc {
             this.isInstalled = true;
             this.canInstall = false;
             this.deferredPrompt = null;
-            console.log('PWA установлено');
+            console.log('PWA installed');
         });
 
         // Проверяем, установлено ли приложение
@@ -1177,6 +1200,37 @@ class ValutCalc {
             event.preventDefault();
             this.handleBackButton();
         }, false);
+
+        // Обработка клавиши Escape для тестирования на десктопе
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                this.handleBackButton();
+            }
+        });
+
+        // Дополнительная обработка для мобильных устройств
+        // Обработка свайпа назад (edge swipe)
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Проверяем, является ли это свайпом назад (слева направо)
+            if (deltaX > 100 && Math.abs(deltaY) < 100) {
+                // Свайп назад - обрабатываем как кнопку "Назад"
+                this.handleBackButton();
+            }
+        }, { passive: true });
     }
 
     handleBackButton() {
@@ -1195,14 +1249,8 @@ class ValutCalc {
                 
             case 'main':
             default:
-                // На главном экране - стандартное поведение браузера
-                // (закрытие приложения или возврат к предыдущей странице)
-                if (window.history.length > 1) {
-                    window.history.back();
-                } else {
-                    // Если нет истории, можно показать подтверждение выхода
-                    this.showExitConfirmation();
-                }
+                // На главном экране - всегда показываем диалог подтверждения выхода
+                this.showExitConfirmation();
                 break;
         }
     }
@@ -1403,6 +1451,277 @@ class ValutCalc {
             lastUpdateTime.textContent = 'Unknown';
         }
     }
+
+    // Методы для долгого нажатия и контекстного меню
+    setupLongPress(element) {
+        let longPressTimer = null;
+        let isLongPress = false;
+        let startX = 0;
+        let startY = 0;
+
+        // Touch события для мобильных устройств
+        element.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            isLongPress = false;
+            
+            longPressTimer = setTimeout(() => {
+                isLongPress = true;
+                this.showContextMenu(e, element);
+            }, 500); // 500ms для долгого нажатия
+        }, { passive: true });
+
+        element.addEventListener('touchmove', (e) => {
+            if (longPressTimer) {
+                const deltaX = Math.abs(e.touches[0].clientX - startX);
+                const deltaY = Math.abs(e.touches[0].clientY - startY);
+                
+                // Если палец сдвинулся больше чем на 10px, отменяем долгое нажатие
+                if (deltaX > 10 || deltaY > 10) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+            }
+        }, { passive: true });
+
+        element.addEventListener('touchend', (e) => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+            
+            // Если это было долгое нажатие, предотвращаем обычный клик
+            if (isLongPress) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+
+        // Mouse события для десктопа (правый клик)
+        element.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            this.showContextMenu(e, element);
+        });
+
+        // Долгое нажатие мышью (для тестирования на десктопе)
+        element.addEventListener('mousedown', (e) => {
+            if (e.button === 0) { // Левая кнопка мыши
+                startX = e.clientX;
+                startY = e.clientY;
+                isLongPress = false;
+                
+                longPressTimer = setTimeout(() => {
+                    isLongPress = true;
+                    this.showContextMenu(e, element);
+                }, 500);
+            }
+        });
+
+        element.addEventListener('mousemove', (e) => {
+            if (longPressTimer) {
+                const deltaX = Math.abs(e.clientX - startX);
+                const deltaY = Math.abs(e.clientY - startY);
+                
+                if (deltaX > 10 || deltaY > 10) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+            }
+        });
+
+        element.addEventListener('mouseup', (e) => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        });
+
+        element.addEventListener('mouseleave', (e) => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        });
+    }
+
+    showContextMenu(event, currencyElement) {
+        const contextMenu = document.getElementById('currencyContextMenu');
+        const currencyCode = currencyElement.dataset.currency;
+        
+        // Сохраняем ссылку на текущую валюту
+        this.contextMenuCurrency = currencyCode;
+        
+        // Показываем визуальную обратную связь
+        currencyElement.classList.add('long-press-active');
+        
+        // Позиционируем меню
+        let x, y;
+        if (event.touches && event.touches[0]) {
+            // Touch событие
+            x = event.touches[0].clientX;
+            y = event.touches[0].clientY;
+        } else {
+            // Mouse событие
+            x = event.clientX;
+            y = event.clientY;
+        }
+        
+        // Учитываем границы экрана
+        const menuWidth = 160;
+        const menuHeight = 80;
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        
+        if (x + menuWidth > screenWidth) {
+            x = screenWidth - menuWidth - 10;
+        }
+        if (y + menuHeight > screenHeight) {
+            y = screenHeight - menuHeight - 10;
+        }
+        
+        contextMenu.style.left = x + 'px';
+        contextMenu.style.top = y + 'px';
+        contextMenu.classList.add('show');
+        
+        // Убираем визуальную обратную связь через короткое время
+        setTimeout(() => {
+            currencyElement.classList.remove('long-press-active');
+        }, 200);
+    }
+
+    hideContextMenu() {
+        const contextMenu = document.getElementById('currencyContextMenu');
+        contextMenu.classList.remove('show');
+        this.contextMenuCurrency = null;
+    }
+
+    async copyCurrencyValue() {
+        if (!this.contextMenuCurrency) return;
+        
+        const value = parseFloat(this.currentValue) || 0;
+        const convertedValue = this.convertCurrency(value, this.activeCurrency, this.contextMenuCurrency);
+        const formattedValue = this.formatValue(convertedValue);
+        
+        try {
+            await navigator.clipboard.writeText(formattedValue);
+            this.showCopySuccess();
+        } catch (err) {
+            // Fallback для старых браузеров
+            const textArea = document.createElement('textarea');
+            textArea.value = formattedValue;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            this.showCopySuccess();
+        }
+        
+        this.hideContextMenu();
+    }
+
+    async pasteCurrencyValue() {
+        if (!this.contextMenuCurrency) return;
+        
+        try {
+            const clipboardText = await navigator.clipboard.readText();
+            this.handlePastedValue(clipboardText);
+        } catch (err) {
+            // Fallback для старых браузеров
+            const textArea = document.createElement('textarea');
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('paste');
+                this.handlePastedValue(textArea.value);
+            } catch (pasteErr) {
+                this.showPasteError('Failed to get data from clipboard');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        this.hideContextMenu();
+    }
+
+    handlePastedValue(value) {
+        // Очищаем значение от лишних символов
+        const cleanValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
+        
+        // Проверяем, что это число
+        const numValue = parseFloat(cleanValue);
+        if (isNaN(numValue) || numValue < 0) {
+            this.showPasteError('Pasted value is not a valid number');
+            return;
+        }
+        
+        // Устанавливаем новое значение
+        this.currentValue = cleanValue;
+        this.hasUserInput = true;
+        this.updateDisplay();
+        
+        this.showPasteSuccess();
+    }
+
+    showCopySuccess() {
+        this.showToast('Value copied to clipboard', 'success');
+    }
+
+    showPasteSuccess() {
+        this.showToast('Value pasted successfully', 'success');
+    }
+
+    showPasteError(message) {
+        this.showToast(message, 'error');
+    }
+
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        
+        // Стили для toast
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 2000;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            animation: toastSlideIn 0.3s ease;
+        `;
+        
+        // Добавляем анимацию
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes toastSlideIn {
+                from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(toast);
+        
+        // Автоматически убираем через 3 секунды
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideIn 0.3s ease reverse';
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+                if (style.parentElement) {
+                    style.remove();
+                }
+            }, 300);
+        }, 3000);
+    }
 }
 
 // Инициализация приложения
@@ -1416,10 +1735,10 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
             .then(registration => {
-                console.log('SW зарегистрирован:', registration);
+                console.log('SW registered:', registration);
             })
             .catch(registrationError => {
-                console.log('SW регистрация не удалась:', registrationError);
+                console.log('SW registration failed:', registrationError);
             });
     });
 }
