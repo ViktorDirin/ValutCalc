@@ -1224,17 +1224,17 @@ class ValutCalc {
     }
 
     setupBackButtonHandling() {
-        // Обработка кнопки "Назад" на Android
-        window.addEventListener('popstate', (event) => {
-            event.preventDefault();
-            this.handleBackButton();
-        });
-
-        // Дополнительная обработка для Android
+        // Обработка системной кнопки "Назад" на Android
         document.addEventListener('backbutton', (event) => {
             event.preventDefault();
             this.handleBackButton();
         }, false);
+
+        // Обработка popstate для браузера
+        window.addEventListener('popstate', (event) => {
+            event.preventDefault();
+            this.handleBackButton();
+        });
 
         // Обработка клавиши Escape для тестирования на десктопе
         document.addEventListener('keydown', (e) => {
@@ -1243,129 +1243,19 @@ class ValutCalc {
                 this.handleBackButton();
             }
         });
-
-        // Дополнительная обработка для мобильных устройств
-        // Обработка свайпа назад (edge swipe)
-        let touchStartX = 0;
-        let touchStartY = 0;
-        
-        document.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        }, { passive: true });
-        
-        document.addEventListener('touchend', (e) => {
-            const touchEndX = e.changedTouches[0].clientX;
-            const touchEndY = e.changedTouches[0].clientY;
-            const deltaX = touchEndX - touchStartX;
-            const deltaY = touchEndY - touchStartY;
-            
-            // Проверяем, является ли это свайпом назад (слева направо)
-            if (deltaX > 100 && Math.abs(deltaY) < 100) {
-                // Свайп назад - обрабатываем как кнопку "Назад"
-                this.handleBackButton();
-            }
-        }, { passive: true });
     }
+
 
     handleBackButton() {
-        console.log('Back button pressed, current screen:', this.currentScreen);
-        
-        switch (this.currentScreen) {
-            case 'currency-settings':
-                // Из настроек валют возвращаемся в настройки
-                this.closeCurrencySettings();
-                break;
-                
-            case 'settings':
-                // Из настроек возвращаемся на главный экран
-                this.closeSettings();
-                break;
-                
-            case 'main':
-            default:
-                // На главном экране - всегда показываем диалог подтверждения выхода
-                this.showExitConfirmation();
-                break;
+        // Простое закрытие модальных окон
+        if (this.currentScreen === 'currency-settings') {
+            this.closeCurrencySettings();
+        } else if (this.currentScreen === 'settings') {
+            this.closeSettings();
         }
+        // На главном экране ничего не делаем
     }
 
-    showExitConfirmation() {
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 3000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        `;
-        
-        modal.innerHTML = `
-            <div style="
-                background: #1a1a1a;
-                border-radius: 16px;
-                padding: 24px;
-                max-width: 400px;
-                width: 100%;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                color: #ffffff;
-                text-align: center;
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            ">
-                <div style="
-                    width: 60px;
-                    height: 60px;
-                    background: rgba(255, 107, 53, 0.1);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin: 0 auto 20px auto;
-                ">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="color: #ff6b35;">
-                        <path d="M9 9l6 6m0-6l-6 6M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <h3 style="margin: 0 0 16px 0; color: #ff6b35; font-size: 18px; font-weight: 600;">Exit App</h3>
-                <p style="margin: 0 0 24px 0; line-height: 1.5; color: #cccccc;">Are you sure you want to exit the application?</p>
-                <div style="display: flex; gap: 12px;">
-                    <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
-                        flex: 1;
-                        padding: 12px;
-                        background: rgba(255, 255, 255, 0.1);
-                        color: white;
-                        border: 1px solid rgba(255, 255, 255, 0.2);
-                        border-radius: 8px;
-                        font-weight: 600;
-                        cursor: pointer;
-                        font-size: 16px;
-                        transition: background 0.3s ease;
-                    " onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'">Cancel</button>
-                    <button onclick="window.close()" style="
-                        flex: 1;
-                        padding: 12px;
-                        background: #ff6b35;
-                        color: white;
-                        border: none;
-                        border-radius: 8px;
-                        font-weight: 600;
-                        cursor: pointer;
-                        font-size: 16px;
-                        transition: background 0.3s ease;
-                    " onmouseover="this.style.background='#e55a2b'" onmouseout="this.style.background='#ff6b35'">Exit</button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-    }
 
     async refreshExchangeRates() {
         const refreshBtn = document.getElementById('refreshRatesBtn');
