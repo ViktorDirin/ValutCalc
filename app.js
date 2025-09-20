@@ -162,17 +162,36 @@ class ValutCalc {
         const loading = document.getElementById('loading');
         const error = document.getElementById('error');
         
+        // Принудительно скрываем загрузку через 15 секунд
+        const forceHideTimeout = setTimeout(() => {
+            loading.classList.add('hidden');
+            error.style.display = 'block';
+            error.textContent = 'Loading timeout. Using fallback rates.';
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 5000);
+        }, 15000);
+        
         try {
             // Пробуем загрузить из кэша
             const cachedRates = this.getCachedRates();
             if (cachedRates && this.isCacheValid(cachedRates.timestamp)) {
                 this.exchangeRates = cachedRates.rates;
+                clearTimeout(forceHideTimeout);
                 loading.classList.add('hidden');
                 return;
             }
 
-            // Загружаем с API
-            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            // Загружаем с API с таймаутом
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
+            
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD', {
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
             if (!response.ok) {
                 throw new Error('API request failed');
             }
@@ -183,6 +202,7 @@ class ValutCalc {
             // Сохраняем в кэш
             this.cacheRates(this.exchangeRates);
             
+            clearTimeout(forceHideTimeout);
             loading.classList.add('hidden');
         } catch (err) {
             console.error('Error loading exchange rates:', err);
@@ -191,7 +211,9 @@ class ValutCalc {
             const cachedRates = this.getCachedRates();
             if (cachedRates) {
                 this.exchangeRates = cachedRates.rates;
+                clearTimeout(forceHideTimeout);
                 error.style.display = 'block';
+                error.textContent = 'Using cached rates. Check your internet connection.';
                 setTimeout(() => {
                     error.style.display = 'none';
                 }, 5000);
@@ -200,12 +222,25 @@ class ValutCalc {
                 this.exchangeRates = {
                     USD: 1,
                     EUR: 0.85,
-                    AZN: 1.7
+                    AZN: 1.7,
+                    RUB: 95.0,
+                    IDR: 15500,
+                    KRW: 1300,
+                    JPY: 150,
+                    CAD: 1.35,
+                    BYN: 3.2,
+                    UAH: 37.0,
+                    CNY: 7.2,
+                    TRY: 30.0,
+                    KZT: 450,
+                    UZS: 12000,
+                    VND: 24000
                 };
                 error.style.display = 'block';
                 error.textContent = 'Using approximate rates. Check your internet connection.';
             }
             
+            clearTimeout(forceHideTimeout);
             loading.classList.add('hidden');
         }
     }
