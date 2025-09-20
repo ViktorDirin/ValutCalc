@@ -1,6 +1,6 @@
-const CACHE_NAME = 'valutcalc-v1.0.3';
-const STATIC_CACHE = 'valutcalc-static-v1.0.3';
-const DYNAMIC_CACHE = 'valutcalc-dynamic-v1.0.3';
+const CACHE_NAME = 'valutcalc-v1.0.4';
+const STATIC_CACHE = 'valutcalc-static-v1.0.4';
+const DYNAMIC_CACHE = 'valutcalc-dynamic-v1.0.4';
 
 // Файлы для кэширования
 const STATIC_FILES = [
