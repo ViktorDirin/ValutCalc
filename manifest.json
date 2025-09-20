@@ -2,12 +2,12 @@
     "name": "ValutCalc - Конвертер валют",
     "short_name": "ValutCalc",
     "description": "Быстрый и удобный конвертер валют с поддержкой USD, EUR, AZN",
-    "start_url": "/",
+    "start_url": "/ValutCalc/",
     "display": "standalone",
     "background_color": "#1a1a1a",
     "theme_color": "#ff6b35",
     "orientation": "portrait",
-    "scope": "/",
+    "scope": "/ValutCalc/",
     "lang": "ru",
     "categories": ["finance", "utilities"],
     "icons": [
@@ -37,7 +37,7 @@
             "name": "Конвертер валют",
             "short_name": "Конвертер",
             "description": "Открыть конвертер валют",
-            "url": "/",
+            "url": "/ValutCalc/",
             "icons": [
                 {
                     "src": "icons/icon-192.png",

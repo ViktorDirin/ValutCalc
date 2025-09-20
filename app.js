@@ -12,6 +12,8 @@ class ValutCalc {
         this.isInstalled = false;
         this.selectedCurrencies = ['USD', 'EUR']; // По умолчанию USD и EUR
         this.hasUserInput = false; // Флаг для отслеживания начала ввода пользователем
+        this.currentScreen = 'main'; // Текущий экран: 'main', 'settings', 'currency-settings'
+        this.navigationStack = []; // Стек навигации
         this.availableCurrencies = {
             'USD': 'US Dollar',
             'EUR': 'Euro',
@@ -38,6 +40,7 @@ class ValutCalc {
         this.loadTheme();
         this.loadSelectedCurrencies();
         this.setupEventListeners();
+        this.setupBackButtonHandling();
         await this.loadExchangeRates();
         this.updateDisplay();
         this.checkForUpdates();
@@ -110,6 +113,11 @@ class ValutCalc {
         // Кнопка обновления в настройках
         document.getElementById('updateBtnSettings').addEventListener('click', () => {
             this.updateApp();
+        });
+
+        // Кнопка обновления курсов валют
+        document.getElementById('refreshRatesBtn').addEventListener('click', () => {
+            this.refreshExchangeRates();
         });
 
         // Переключение темы в настройках
@@ -371,8 +379,11 @@ class ValutCalc {
     formatValue(value) {
         if (value === 0) return '0';
         
-        // Форматируем с 4 знаками после запятой
-        return value.toFixed(4).replace(/\.?0+$/, '') || '0';
+        // Форматируем с 2 знаками после запятой и пробелами для тысяч
+        const formatted = value.toFixed(2);
+        const parts = formatted.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        return parts.join('.');
     }
 
     loadTheme() {
@@ -476,8 +487,15 @@ class ValutCalc {
             console.error('Settings modal not found!');
         }
         
+        // Добавляем в стек навигации
+        this.navigationStack.push(this.currentScreen);
+        this.currentScreen = 'settings';
+        
         // Обновляем состояние кнопок
         this.updateSettingsButtons();
+        
+        // Обновляем информацию о последнем обновлении курсов
+        this.updateLastUpdateTime();
         
         // Устанавливаем текущую тему
         const currentTheme = this.isDarkTheme ? 'dark' : 'light';
@@ -487,6 +505,13 @@ class ValutCalc {
     closeSettings() {
         const modal = document.getElementById('settingsModal');
         modal.style.display = 'none';
+        
+        // Возвращаемся к предыдущему экрану
+        if (this.navigationStack.length > 0) {
+            this.currentScreen = this.navigationStack.pop();
+        } else {
+            this.currentScreen = 'main';
+        }
     }
 
     updateSettingsButtons() {
@@ -783,12 +808,24 @@ class ValutCalc {
     openCurrencySettings() {
         const modal = document.getElementById('currencySettingsModal');
         modal.style.display = 'flex';
+        
+        // Добавляем в стек навигации
+        this.navigationStack.push(this.currentScreen);
+        this.currentScreen = 'currency-settings';
+        
         this.updateCurrencySettingsDisplay();
     }
 
     closeCurrencySettings() {
         const modal = document.getElementById('currencySettingsModal');
         modal.style.display = 'none';
+        
+        // Возвращаемся к предыдущему экрану
+        if (this.navigationStack.length > 0) {
+            this.currentScreen = this.navigationStack.pop();
+        } else {
+            this.currentScreen = 'main';
+        }
     }
 
     updateCurrencySettingsDisplay() {
@@ -871,7 +908,7 @@ class ValutCalc {
 
     removeCurrency(currencyCode) {
         if (this.selectedCurrencies.length <= 1) {
-            alert('You must have at least one currency selected.');
+            this.showCustomAlert('You must have at least one currency selected.');
             return;
         }
 
@@ -883,7 +920,7 @@ class ValutCalc {
 
     addCurrency(currencyCode) {
         if (this.selectedCurrencies.length >= 5) {
-            alert('You can select maximum 5 currencies. Please remove one currency first.');
+            this.showCustomAlert('You can select maximum 5 currencies. Please remove one currency first.');
             return;
         }
 
@@ -1054,6 +1091,316 @@ class ValutCalc {
             this.saveSelectedCurrencies();
             this.updateCurrencySettingsDisplay();
             this.updateDisplay();
+        }
+    }
+
+    showCustomAlert(message) {
+        // Создаем модальное окно с предупреждением
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        `;
+        
+        modal.innerHTML = `
+            <div style="
+                background: #1a1a1a;
+                border-radius: 16px;
+                padding: 24px;
+                max-width: 400px;
+                width: 100%;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+                text-align: center;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            ">
+                <div style="
+                    width: 60px;
+                    height: 60px;
+                    background: rgba(255, 107, 53, 0.1);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 20px auto;
+                ">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="color: #ff6b35;">
+                        <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3 style="margin: 0 0 16px 0; color: #ff6b35; font-size: 18px; font-weight: 600;">Warning</h3>
+                <p style="margin: 0 0 24px 0; line-height: 1.5; color: #cccccc;">${message}</p>
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    width: 100%;
+                    padding: 12px;
+                    background: #ff6b35;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    font-size: 16px;
+                    transition: background 0.3s ease;
+                " onmouseover="this.style.background='#e55a2b'" onmouseout="this.style.background='#ff6b35'">OK</button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Автоматически закрываем через 5 секунд
+        setTimeout(() => {
+            if (modal.parentElement) {
+                modal.remove();
+            }
+        }, 5000);
+    }
+
+    setupBackButtonHandling() {
+        // Обработка кнопки "Назад" на Android
+        window.addEventListener('popstate', (event) => {
+            event.preventDefault();
+            this.handleBackButton();
+        });
+
+        // Дополнительная обработка для Android
+        document.addEventListener('backbutton', (event) => {
+            event.preventDefault();
+            this.handleBackButton();
+        }, false);
+    }
+
+    handleBackButton() {
+        console.log('Back button pressed, current screen:', this.currentScreen);
+        
+        switch (this.currentScreen) {
+            case 'currency-settings':
+                // Из настроек валют возвращаемся в настройки
+                this.closeCurrencySettings();
+                break;
+                
+            case 'settings':
+                // Из настроек возвращаемся на главный экран
+                this.closeSettings();
+                break;
+                
+            case 'main':
+            default:
+                // На главном экране - стандартное поведение браузера
+                // (закрытие приложения или возврат к предыдущей странице)
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    // Если нет истории, можно показать подтверждение выхода
+                    this.showExitConfirmation();
+                }
+                break;
+        }
+    }
+
+    showExitConfirmation() {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        `;
+        
+        modal.innerHTML = `
+            <div style="
+                background: #1a1a1a;
+                border-radius: 16px;
+                padding: 24px;
+                max-width: 400px;
+                width: 100%;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+                text-align: center;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            ">
+                <div style="
+                    width: 60px;
+                    height: 60px;
+                    background: rgba(255, 107, 53, 0.1);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 20px auto;
+                ">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="color: #ff6b35;">
+                        <path d="M9 9l6 6m0-6l-6 6M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3 style="margin: 0 0 16px 0; color: #ff6b35; font-size: 18px; font-weight: 600;">Exit App</h3>
+                <p style="margin: 0 0 24px 0; line-height: 1.5; color: #cccccc;">Are you sure you want to exit the application?</p>
+                <div style="display: flex; gap: 12px;">
+                    <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                        flex: 1;
+                        padding: 12px;
+                        background: rgba(255, 255, 255, 0.1);
+                        color: white;
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        border-radius: 8px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: background 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'">Cancel</button>
+                    <button onclick="window.close()" style="
+                        flex: 1;
+                        padding: 12px;
+                        background: #ff6b35;
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: background 0.3s ease;
+                    " onmouseover="this.style.background='#e55a2b'" onmouseout="this.style.background='#ff6b35'">Exit</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+    }
+
+    async refreshExchangeRates() {
+        const refreshBtn = document.getElementById('refreshRatesBtn');
+        const lastUpdateTime = document.getElementById('lastUpdateTime');
+        
+        // Показываем состояние загрузки
+        refreshBtn.disabled = true;
+        refreshBtn.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="rotating">
+                <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span>Refreshing...</span>
+        `;
+        lastUpdateTime.textContent = 'Updating...';
+
+        try {
+            // Загружаем новые курсы
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            if (!response.ok) {
+                throw new Error('API request failed');
+            }
+
+            const data = await response.json();
+            this.exchangeRates = data.rates;
+
+            // Сохраняем в кэш с новым временем
+            this.cacheRates(this.exchangeRates);
+            
+            // Обновляем отображение
+            this.updateDisplay();
+            
+            // Обновляем время последнего обновления
+            this.updateLastUpdateTime();
+            
+            // Показываем успешное обновление
+            refreshBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span>Updated!</span>
+            `;
+            
+            // Возвращаем к исходному состоянию через 2 секунды
+            setTimeout(() => {
+                refreshBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                        <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span>Refresh Exchange Rates</span>
+                `;
+                refreshBtn.disabled = false;
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Error refreshing exchange rates:', error);
+            
+            // Показываем ошибку
+            refreshBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Error</span>
+            `;
+            lastUpdateTime.textContent = 'Update failed';
+            
+            // Возвращаем к исходному состоянию через 3 секунды
+            setTimeout(() => {
+                refreshBtn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
+                        <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span>Refresh Exchange Rates</span>
+                `;
+                refreshBtn.disabled = false;
+                this.updateLastUpdateTime();
+            }, 3000);
+        }
+    }
+
+    updateLastUpdateTime() {
+        const lastUpdateTime = document.getElementById('lastUpdateTime');
+        if (!lastUpdateTime) return;
+
+        try {
+            const cachedRates = this.getCachedRates();
+            if (cachedRates && cachedRates.timestamp) {
+                const updateDate = new Date(cachedRates.timestamp);
+                const now = new Date();
+                const diffMs = now - updateDate;
+                const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+                let timeString;
+                if (diffMinutes < 1) {
+                    timeString = 'Just now';
+                } else if (diffMinutes < 60) {
+                    timeString = `${diffMinutes}m ago`;
+                } else if (diffHours < 24) {
+                    timeString = `${diffHours}h ago`;
+                } else {
+                    timeString = `${diffDays}d ago`;
+                }
+
+                lastUpdateTime.textContent = timeString;
+            } else {
+                lastUpdateTime.textContent = 'Never updated';
+            }
+        } catch (error) {
+            console.error('Error updating last update time:', error);
+            lastUpdateTime.textContent = 'Unknown';
         }
     }
 }

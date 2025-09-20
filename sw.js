@@ -1,16 +1,16 @@
-const CACHE_NAME = 'valutcalc-v1.0.1';
-const STATIC_CACHE = 'valutcalc-static-v1.0.1';
-const DYNAMIC_CACHE = 'valutcalc-dynamic-v1.0.1';
+const CACHE_NAME = 'valutcalc-v1.0.2';
+const STATIC_CACHE = 'valutcalc-static-v1.0.2';
+const DYNAMIC_CACHE = 'valutcalc-dynamic-v1.0.2';
 
 // Файлы для кэширования
 const STATIC_FILES = [
-    '/',
-    '/index.html',
-    '/styles.css',
-    '/app.js',
-    '/manifest.json',
-    '/icons/icon-192.png',
-    '/icons/icon-512.png'
+    '/ValutCalc/',
+    '/ValutCalc/index.html',
+    '/ValutCalc/styles.css',
+    '/ValutCalc/app.js',
+    '/ValutCalc/manifest.json',
+    '/ValutCalc/icons/icon-192.png',
+    '/ValutCalc/icons/icon-512.png'
 ];
 
 // API endpoints для кэширования
@@ -142,7 +142,7 @@ self.addEventListener('fetch', event => {
                             
                             // Fallback для HTML файлов
                             if (request.destination === 'document') {
-                                return caches.match('/index.html');
+                                return caches.match('/ValutCalc/index.html');
                             }
                             
                             throw error;
@@ -264,7 +264,7 @@ self.addEventListener('notificationclick', event => {
 
     if (event.action === 'open') {
         event.waitUntil(
-            clients.openWindow('/')
+            clients.openWindow('/ValutCalc/')
         );
     }
 });
