@@ -289,8 +289,10 @@ body.light-theme .currency-settings-btn:hover {
     width: 100%;
     max-width: 500px;
     max-height: 80vh;
-    overflow-y: auto;
+    overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
 }
 
 body.light-theme .currency-settings-content {
@@ -304,6 +306,11 @@ body.light-theme .currency-settings-content {
     align-items: center;
     padding: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: #1a1a1a;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
 }
 
 .currency-settings-header h2 {
@@ -311,6 +318,10 @@ body.light-theme .currency-settings-content {
     color: #ffffff;
     font-size: 20px;
     font-weight: 600;
+}
+
+body.light-theme .currency-settings-header {
+    background: #ffffff;
 }
 
 body.light-theme .currency-settings-header h2 {
@@ -343,6 +354,8 @@ body.light-theme .currency-settings-close {
 
 .currency-settings-body {
     padding: 20px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .current-currencies-section,
