@@ -249,8 +249,14 @@ body.light-theme .currency-settings-btn:hover {
 /* Разделительная линия */
 .settings-divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
     margin: 24px 0;
+    border-radius: 1px;
+}
+
+/* Для светлой темы */
+body.light-theme .settings-divider {
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.2), transparent);
 }
 
 /* Анимация вращения для иконки обновления */
@@ -851,6 +857,78 @@ body.light-theme .theme-options::-webkit-scrollbar-thumb:hover {
     margin-bottom: 4px;
 }
 
+/* Контейнер для валют с ограниченной высотой и прокруткой */
+.currency-container {
+    flex: 1;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px); /* Ограничиваем высоту */
+    padding: 0 20px;
+    margin: 10px 0;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .currency-container {
+        max-height: calc(100vh - 180px);
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .currency-container {
+        max-height: calc(100vh - 160px);
+        padding: 0 10px;
+    }
+}
+
+/* Скрываем скроллбар для красоты */
+.currency-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.currency-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.currency-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 53, 0.3);
+    border-radius: 2px;
+}
+
+.currency-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 107, 53, 0.5);
+}
+
+/* Компактный режим для валют */
+.currency-section.compact-mode {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.currency-section.compact-mode .currency-row {
+    padding: 8px 12px;
+    min-height: 60px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.currency-code-compact {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ff6b35;
+    margin-bottom: 4px;
+}
+
+.currency-section.compact-mode .currency-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
 .currency-row:hover {
     background: rgba(255, 255, 255, 0.08);
     transform: translateY(-2px);
@@ -886,8 +964,35 @@ body.light-theme .currency-code {
     color: #666666;
 }
 
+/* Компактный режим для светлой темы */
+body.light-theme .currency-code-compact {
+    color: #ff6b35;
+}
+
+body.light-theme .currency-section.compact-mode .currency-value {
+    color: #333333;
+}
+
 body.light-theme .currency-value {
     color: #333333;
+}
+
+/* Коды валют в зеленой теме */
+body.green-theme .currency-code {
+    color: #4ade80;
+}
+
+body.green-theme .currency-code-compact {
+    color: #4ade80;
+}
+
+/* Коды валют в синей теме */
+body.blue-theme .currency-code {
+    color: #3b82f6;
+}
+
+body.blue-theme .currency-code-compact {
+    color: #3b82f6;
 }
 
 .currency-name {
@@ -1064,6 +1169,37 @@ body.light-theme .key:active {
 
 .clear-btn:active {
     transform: translateY(0);
+}
+
+/* Стили для кнопки AC в разных темах */
+body.light-theme .clear-btn {
+    background: #ff6b35;
+    color: #ffffff;
+}
+
+body.light-theme .clear-btn:hover {
+    background: #ff5722;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+}
+
+body.green-theme .clear-btn {
+    background: #4ade80;
+    color: #0f1419;
+}
+
+body.green-theme .clear-btn:hover {
+    background: #22c55e;
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+}
+
+body.blue-theme .clear-btn {
+    background: #3b82f6;
+    color: #ffffff;
+}
+
+body.blue-theme .clear-btn:hover {
+    background: #2563eb;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .delete-btn {

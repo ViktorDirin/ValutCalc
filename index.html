@@ -9,7 +9,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta name="theme-color" content="#1a1a1a">
     <meta name="description" content="Currency converter with support for USD, EUR, AZN">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.exchangerate-api.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' chrome-extension:; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.exchangerate-api.com;">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -37,27 +37,29 @@
         </div>
 
         <!-- Валютные строки -->
-        <div class="currency-section">
-            <div class="currency-row active" data-currency="USD">
-                <div class="currency-info">
-                    <div class="currency-name">US Dollar</div>
-                    <div class="currency-code">USD</div>
+        <div class="currency-container">
+            <div class="currency-section">
+                <div class="currency-row active" data-currency="USD">
+                    <div class="currency-info">
+                        <div class="currency-name">US Dollar</div>
+                        <div class="currency-code">USD</div>
+                    </div>
+                    <div class="currency-value">1</div>
                 </div>
-                <div class="currency-value">1</div>
-            </div>
-            <div class="currency-row" data-currency="EUR">
-                <div class="currency-info">
-                    <div class="currency-name">Euro</div>
-                    <div class="currency-code">EUR</div>
+                <div class="currency-row" data-currency="EUR">
+                    <div class="currency-info">
+                        <div class="currency-name">Euro</div>
+                        <div class="currency-code">EUR</div>
+                    </div>
+                    <div class="currency-value">0</div>
                 </div>
-                <div class="currency-value">0</div>
-            </div>
-            <div class="currency-row" data-currency="AZN">
-                <div class="currency-info">
-                    <div class="currency-name">Azerbaijani Manat</div>
-                    <div class="currency-code">AZN</div>
+                <div class="currency-row" data-currency="AZN">
+                    <div class="currency-info">
+                        <div class="currency-name">Azerbaijani Manat</div>
+                        <div class="currency-code">AZN</div>
+                    </div>
+                    <div class="currency-value">0</div>
                 </div>
-                <div class="currency-value">0</div>
             </div>
         </div>
 
@@ -203,6 +205,9 @@
                         </button>
                     </div>
                     
+                    <!-- Разделительная линия -->
+                    <div class="settings-divider"></div>
+                    
                     <div class="settings-section">
                         <h3>Exchange Rates</h3>
                         <button class="refresh-rates-btn" id="refreshRatesBtn">
@@ -268,7 +273,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=44"></script>
+    <script src="app.js?v=60"></script>
 </body>
 </html>
 < ! - -   F o r c e   r e f r e s h   - - > 

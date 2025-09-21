@@ -15,21 +15,164 @@ class ValutCalc {
         this.currentScreen = 'main'; // Текущий экран: 'main', 'settings', 'currency-settings'
         this.navigationStack = []; // Стек навигации
         this.availableCurrencies = {
+            // Major currencies
             'USD': 'US Dollar',
             'EUR': 'Euro',
-            'AZN': 'Azerbaijani Manat',
-            'RUB': 'Russian Ruble',
-            'IDR': 'Indonesian Rupiah',
-            'KRW': 'South Korean Won',
+            'GBP': 'British Pound Sterling',
             'JPY': 'Japanese Yen',
+            'AUD': 'Australian Dollar',
             'CAD': 'Canadian Dollar',
-            'BYN': 'Belarusian Ruble',
-            'UAH': 'Ukrainian Hryvnia',
+            'CHF': 'Swiss Franc',
             'CNY': 'Chinese Yuan',
+            'SEK': 'Swedish Krona',
+            'NZD': 'New Zealand Dollar',
+            'NOK': 'Norwegian Krone',
+            'KRW': 'South Korean Won',
+            'SGD': 'Singapore Dollar',
+            'HKD': 'Hong Kong Dollar',
+            'DKK': 'Danish Krone',
+            'PLN': 'Polish Zloty',
+            'CZK': 'Czech Koruna',
+            'HUF': 'Hungarian Forint',
+            
+            // Asian currencies
+            'INR': 'Indian Rupee',
+            'THB': 'Thai Baht',
+            'MYR': 'Malaysian Ringgit',
+            'IDR': 'Indonesian Rupiah',
+            'PHP': 'Philippine Peso',
+            'VND': 'Vietnamese Dong',
+            'TWD': 'New Taiwan Dollar',
+            'PKR': 'Pakistani Rupee',
+            'LKR': 'Sri Lankan Rupee',
+            'BDT': 'Bangladeshi Taka',
+            'NPR': 'Nepalese Rupee',
+            'MMK': 'Myanmar Kyat',
+            'KHR': 'Cambodian Riel',
+            'LAK': 'Lao Kip',
+            'MOP': 'Macanese Pataca',
+            'BND': 'Brunei Dollar',
+            
+            // Middle East & Africa
+            'AED': 'UAE Dirham',
+            'SAR': 'Saudi Riyal',
+            'QAR': 'Qatari Riyal',
+            'KWD': 'Kuwaiti Dinar',
+            'BHD': 'Bahraini Dinar',
+            'OMR': 'Omani Rial',
+            'JOD': 'Jordanian Dinar',
+            'LBP': 'Lebanese Pound',
+            'EGP': 'Egyptian Pound',
             'TRY': 'Turkish Lira',
+            'ILS': 'Israeli Shekel',
+            'IRR': 'Iranian Rial',
+            'AFN': 'Afghan Afghani',
+            'IQD': 'Iraqi Dinar',
+            'SYP': 'Syrian Pound',
+            'YER': 'Yemeni Rial',
+            
+            // African currencies
+            'ZAR': 'South African Rand',
+            'MAD': 'Moroccan Dirham',
+            'TND': 'Tunisian Dinar',
+            'DZD': 'Algerian Dinar',
+            'LYD': 'Libyan Dinar',
+            'EGP': 'Egyptian Pound',
+            'ETB': 'Ethiopian Birr',
+            'KES': 'Kenyan Shilling',
+            'TZS': 'Tanzanian Shilling',
+            'UGX': 'Ugandan Shilling',
+            'RWF': 'Rwandan Franc',
+            'BIF': 'Burundian Franc',
+            'DJF': 'Djiboutian Franc',
+            'SOS': 'Somali Shilling',
+            'XOF': 'West African CFA Franc',
+            'XAF': 'Central African CFA Franc',
+            'GHS': 'Ghanaian Cedi',
+            'NGN': 'Nigerian Naira',
+            'XOF': 'West African CFA Franc',
+            'GMD': 'Gambian Dalasi',
+            'GNF': 'Guinean Franc',
+            'LRD': 'Liberian Dollar',
+            'SLL': 'Sierra Leonean Leone',
+            'CVE': 'Cape Verdean Escudo',
+            'STN': 'São Tomé and Príncipe Dobra',
+            'MRU': 'Mauritanian Ouguiya',
+            'SHP': 'Saint Helena Pound',
+            'FKP': 'Falkland Islands Pound',
+            
+            // Europe
+            'RON': 'Romanian Leu',
+            'BGN': 'Bulgarian Lev',
+            'HRK': 'Croatian Kuna',
+            'RSD': 'Serbian Dinar',
+            'BAM': 'Bosnia-Herzegovina Convertible Mark',
+            'MKD': 'Macedonian Denar',
+            'ALL': 'Albanian Lek',
+            'MDL': 'Moldovan Leu',
+            'UAH': 'Ukrainian Hryvnia',
+            'BYN': 'Belarusian Ruble',
+            'RUB': 'Russian Ruble',
+            'GEL': 'Georgian Lari',
+            'AMD': 'Armenian Dram',
+            'AZN': 'Azerbaijani Manat',
             'KZT': 'Kazakhstani Tenge',
+            'KGS': 'Kyrgyzstani Som',
             'UZS': 'Uzbekistani Som',
-            'VND': 'Vietnamese Dong'
+            'TJS': 'Tajikistani Somoni',
+            'TMT': 'Turkmenistani Manat',
+            
+            // Americas
+            'BRL': 'Brazilian Real',
+            'ARS': 'Argentine Peso',
+            'CLP': 'Chilean Peso',
+            'COP': 'Colombian Peso',
+            'PEN': 'Peruvian Sol',
+            'UYU': 'Uruguayan Peso',
+            'PYG': 'Paraguayan Guarani',
+            'BOB': 'Bolivian Boliviano',
+            'VES': 'Venezuelan Bolívar',
+            'GYD': 'Guyanese Dollar',
+            'SRD': 'Surinamese Dollar',
+            'MXN': 'Mexican Peso',
+            'GTQ': 'Guatemalan Quetzal',
+            'BZD': 'Belize Dollar',
+            'SVC': 'Salvadoran Colón',
+            'HNL': 'Honduran Lempira',
+            'NIO': 'Nicaraguan Córdoba',
+            'CRC': 'Costa Rican Colón',
+            'PAB': 'Panamanian Balboa',
+            'JMD': 'Jamaican Dollar',
+            'HTG': 'Haitian Gourde',
+            'DOP': 'Dominican Peso',
+            'CUP': 'Cuban Peso',
+            'BBD': 'Barbadian Dollar',
+            'TTD': 'Trinidad & Tobago Dollar',
+            'XCD': 'East Caribbean Dollar',
+            'AWG': 'Aruban Florin',
+            'ANG': 'Netherlands Antillean Guilder',
+            'KYD': 'Cayman Islands Dollar',
+            'BMD': 'Bermudian Dollar',
+            'BSD': 'Bahamian Dollar',
+            
+            // Oceania
+            'FJD': 'Fijian Dollar',
+            'PGK': 'Papua New Guinean Kina',
+            'SBD': 'Solomon Islands Dollar',
+            'VUV': 'Vanuatu Vatu',
+            'WST': 'Samoan Tala',
+            'TOP': 'Tongan Paʻanga',
+            'TVD': 'Tuvaluan Dollar',
+            'KID': 'Kiribati Dollar',
+            'NRU': 'Nauruan Dollar',
+            'MOP': 'Macanese Pataca',
+            
+            // Special currencies
+            'XDR': 'Special Drawing Rights',
+            'XAG': 'Silver Ounce',
+            'XAU': 'Gold Ounce',
+            'XPD': 'Palladium Ounce',
+            'XPT': 'Platinum Ounce'
         };
         
         this.init();
@@ -37,6 +180,33 @@ class ValutCalc {
 
     async init() {
         console.log('ValutCalc initializing...');
+        
+        // Принудительно очищаем кеш Service Worker
+        if ('serviceWorker' in navigator) {
+            try {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                    console.log('Service Worker unregistered');
+                }
+            } catch (error) {
+                console.log('No Service Worker to unregister');
+            }
+        }
+        
+        // Очищаем кеш браузера для принудительной загрузки новой версии
+        if ('caches' in window) {
+            try {
+                const cacheNames = await caches.keys();
+                await Promise.all(
+                    cacheNames.map(cacheName => caches.delete(cacheName))
+                );
+                console.log('Browser cache cleared');
+            } catch (error) {
+                console.log('No cache to clear');
+            }
+        }
+        
         this.loadTheme();
         this.loadSelectedCurrencies();
         this.setupEventListeners();
@@ -222,19 +392,67 @@ class ValutCalc {
                 this.exchangeRates = {
                     USD: 1,
                     EUR: 0.85,
-                    AZN: 1.7,
-                    RUB: 95.0,
-                    IDR: 15500,
-                    KRW: 1300,
+                    GBP: 0.75,
                     JPY: 150,
+                    AUD: 1.50,
                     CAD: 1.35,
-                    BYN: 3.2,
-                    UAH: 37.0,
-                    CNY: 7.2,
+                    CHF: 0.90,
+                    CNY: 7.20,
+                    SEK: 10.50,
+                    NZD: 1.60,
+                    NOK: 10.80,
+                    KRW: 1300,
+                    SGD: 1.35,
+                    HKD: 7.80,
+                    DKK: 6.30,
+                    PLN: 4.00,
+                    CZK: 22.50,
+                    HUF: 350,
+                    INR: 83.50,
+                    THB: 35.50,
+                    MYR: 4.70,
+                    IDR: 15500,
+                    PHP: 56.50,
+                    VND: 24000,
+                    TWD: 31.50,
+                    PKR: 280,
+                    BDT: 110,
+                    AED: 3.67,
+                    SAR: 3.75,
+                    QAR: 3.64,
+                    KWD: 0.31,
+                    BHD: 0.38,
+                    OMR: 0.38,
+                    JOD: 0.71,
+                    ILS: 3.70,
                     TRY: 30.0,
+                    ZAR: 18.50,
+                    EGP: 31.0,
+                    MAD: 10.20,
+                    NGN: 820,
+                    KES: 150,
+                    GHS: 12.50,
+                    RON: 4.50,
+                    BGN: 1.66,
+                    HRK: 6.40,
+                    RSD: 100,
+                    UAH: 37.0,
+                    BYN: 3.2,
+                    RUB: 95.0,
+                    GEL: 2.65,
+                    AMD: 390,
+                    AZN: 1.7,
                     KZT: 450,
                     UZS: 12000,
-                    VND: 24000
+                    BRL: 5.20,
+                    ARS: 850,
+                    CLP: 920,
+                    COP: 4200,
+                    PEN: 3.75,
+                    MXN: 17.50,
+                    XAU: 0.0005,  // Gold
+                    XAG: 0.04,    // Silver
+                    XDR: 0.75     // SDR
                 };
                 error.style.display = 'block';
                 error.textContent = 'Using approximate rates. Check your internet connection.';
@@ -389,6 +607,15 @@ class ValutCalc {
         const currencySection = document.querySelector('.currency-section');
         currencySection.innerHTML = '';
 
+        // Определяем режим отображения
+        const isCompactMode = this.selectedCurrencies.length > 8;
+        
+        if (isCompactMode) {
+            currencySection.classList.add('compact-mode');
+        } else {
+            currencySection.classList.remove('compact-mode');
+        }
+
         this.selectedCurrencies.forEach(currencyCode => {
             const currencyName = this.getCurrencyName(currencyCode);
             const isActive = currencyCode === this.activeCurrency;
@@ -396,13 +623,23 @@ class ValutCalc {
             const currencyRow = document.createElement('div');
             currencyRow.className = `currency-row ${isActive ? 'active' : ''}`;
             currencyRow.dataset.currency = currencyCode;
-            currencyRow.innerHTML = `
-                <div class="currency-info">
-                    <div class="currency-name">${currencyName}</div>
-                    <div class="currency-code">${currencyCode}</div>
-                </div>
-                <div class="currency-value">0</div>
-            `;
+            
+            if (isCompactMode) {
+                // Компактный режим: только аббревиатура и цифры
+                currencyRow.innerHTML = `
+                    <div class="currency-code-compact">${currencyCode}</div>
+                    <div class="currency-value">0</div>
+                `;
+            } else {
+                // Обычный режим: полное название и аббревиатура
+                currencyRow.innerHTML = `
+                    <div class="currency-info">
+                        <div class="currency-name">${currencyName}</div>
+                        <div class="currency-code">${currencyCode}</div>
+                    </div>
+                    <div class="currency-value">0</div>
+                `;
+            }
             
             // Добавляем обработчик клика
             currencyRow.addEventListener('click', () => {
@@ -776,6 +1013,15 @@ class ValutCalc {
         updateBtn.disabled = true;
 
         try {
+            // Очищаем кеш браузера перед обновлением
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(
+                    cacheNames.map(cacheName => caches.delete(cacheName))
+                );
+                console.log('Cache cleared before update');
+            }
+            
             // Принудительно обновляем Service Worker
             await this.serviceWorkerRegistration.update();
             
@@ -786,7 +1032,7 @@ class ValutCalc {
             
             // Перезагружаем страницу для применения обновления
             setTimeout(() => {
-                window.location.reload();
+                window.location.reload(true); // Принудительная перезагрузка
             }, 1000);
             
         } catch (error) {
@@ -932,31 +1178,33 @@ class ValutCalc {
         const container = document.getElementById('availableCurrenciesList');
         container.innerHTML = '';
 
-        Object.entries(this.availableCurrencies).forEach(([code, name]) => {
-            const isSelected = this.selectedCurrencies.includes(code);
-            if (!isSelected) { // Показываем только не выбранные валюты
-                const currencyItem = document.createElement('div');
-                currencyItem.className = 'currency-item';
-                currencyItem.innerHTML = `
-                    <div class="currency-item-info">
-                        <span class="currency-item-name">${name}</span>
-                        <span class="currency-item-code">${code}</span>
-                    </div>
-                    <div class="currency-item-actions">
-                        <button class="add-currency-btn" data-currency="${code}">Add</button>
-                    </div>
-                `;
-                
-                // Добавляем обработчик для кнопки добавления
-                const addBtn = currencyItem.querySelector('.add-currency-btn');
-                addBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Предотвращаем срабатывание drag & drop
-                    e.preventDefault();
-                    this.addCurrency(code);
-                });
-                
-                container.appendChild(currencyItem);
-            }
+        // Сортируем валюты по алфавиту (по названию)
+        const sortedCurrencies = Object.entries(this.availableCurrencies)
+            .filter(([code, name]) => !this.selectedCurrencies.includes(code)) // Показываем только не выбранные валюты
+            .sort((a, b) => a[1].localeCompare(b[1])); // Сортировка по названию
+
+        sortedCurrencies.forEach(([code, name]) => {
+            const currencyItem = document.createElement('div');
+            currencyItem.className = 'currency-item';
+            currencyItem.innerHTML = `
+                <div class="currency-item-info">
+                    <span class="currency-item-name">${name}</span>
+                    <span class="currency-item-code">${code}</span>
+                </div>
+                <div class="currency-item-actions">
+                    <button class="add-currency-btn" data-currency="${code}">Add</button>
+                </div>
+            `;
+            
+            // Добавляем обработчик для кнопки добавления
+            const addBtn = currencyItem.querySelector('.add-currency-btn');
+            addBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Предотвращаем срабатывание drag & drop
+                e.preventDefault();
+                this.addCurrency(code);
+            });
+            
+            container.appendChild(currencyItem);
         });
     }
 
@@ -977,11 +1225,7 @@ class ValutCalc {
     }
 
     addCurrency(currencyCode) {
-        if (this.selectedCurrencies.length >= 5) {
-            this.showCustomAlert('You can select maximum 5 currencies. Please remove one currency first.');
-            return;
-        }
-
+        // Убрали ограничение на количество валют
         this.selectedCurrencies.push(currencyCode);
         this.saveSelectedCurrencies();
         this.updateCurrencySettingsDisplay();
@@ -1525,15 +1769,16 @@ class ValutCalc {
         
         const value = parseFloat(this.currentValue) || 0;
         const convertedValue = this.convertCurrency(value, this.activeCurrency, this.contextMenuCurrency);
-        const formattedValue = this.formatValue(convertedValue);
+        // Копируем без пробелов для удобства вставки
+        const copyValue = convertedValue.toFixed(2);
         
         try {
-            await navigator.clipboard.writeText(formattedValue);
+            await navigator.clipboard.writeText(copyValue);
             this.showCopySuccess();
         } catch (err) {
             // Fallback для старых браузеров
             const textArea = document.createElement('textarea');
-            textArea.value = formattedValue;
+            textArea.value = copyValue;
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand('copy');
@@ -1571,8 +1816,8 @@ class ValutCalc {
     }
 
     handlePastedValue(value) {
-        // Очищаем значение от лишних символов
-        const cleanValue = value.replace(/[^\d.,]/g, '').replace(',', '.');
+        // Убираем все пробелы и очищаем от лишних символов
+        const cleanValue = value.replace(/\s/g, '').replace(/[^\d.,]/g, '').replace(',', '.');
         
         // Проверяем, что это число
         const numValue = parseFloat(cleanValue);
