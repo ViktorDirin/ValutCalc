@@ -262,10 +262,6 @@ class ValutCalc {
             this.handleKeyboardInput(e);
         });
 
-        // Кнопка смены темы
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            this.toggleTheme();
-        });
 
         // Кнопка настроек
         document.getElementById('settingsBtn').addEventListener('click', () => {
@@ -317,6 +313,15 @@ class ValutCalc {
 
         document.getElementById('pasteValueBtn').addEventListener('click', () => {
             this.pasteCurrencyValue();
+        });
+
+        // Модальное окно поддержки
+        document.getElementById('supportArea').addEventListener('click', () => {
+            this.openSupportModal();
+        });
+
+        document.getElementById('supportModalClose').addEventListener('click', () => {
+            this.closeSupportModal();
         });
 
         // Закрытие контекстного меню при клике вне его
@@ -462,6 +467,7 @@ class ValutCalc {
             loading.classList.add('hidden');
         }
     }
+
 
     getCachedRates() {
         try {
@@ -1036,7 +1042,7 @@ class ValutCalc {
             }, 1000);
             
         } catch (error) {
-            console.error('Ошибка обновления:', error);
+            console.error('Update error:', error);
             updateBtn.innerHTML = `
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
@@ -1822,9 +1828,18 @@ class ValutCalc {
         // Проверяем, что это число
         const numValue = parseFloat(cleanValue);
         if (isNaN(numValue) || numValue < 0) {
-            this.showPasteError('Pasted value is not a valid number');
+            this.showPasteError('Only numbers can be pasted');
             return;
         }
+        
+        // Проверяем, что есть валюта для вставки
+        if (!this.contextMenuCurrency) {
+            this.showPasteError('No currency selected for pasting');
+            return;
+        }
+        
+        // Активируем валюту, в которую вставляем
+        this.setActiveCurrency(this.contextMenuCurrency);
         
         // Устанавливаем новое значение
         this.currentValue = cleanValue;
@@ -1891,6 +1906,27 @@ class ValutCalc {
                 }
             }, 300);
         }, 3000);
+    }
+
+    openSupportModal() {
+        const modal = document.getElementById('supportModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            // Добавляем анимацию появления
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+        }
+    }
+
+    closeSupportModal() {
+        const modal = document.getElementById('supportModal');
+        if (modal) {
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
     }
 }
 
