@@ -14,6 +14,99 @@ class ValutCalc {
         this.hasUserInput = false; // Флаг для отслеживания начала ввода пользователем
         this.currentScreen = 'main'; // Текущий экран: 'main', 'settings', 'currency-settings'
         this.navigationStack = []; // Стек навигации
+        this.currentLanguage = 'en'; // Текущий язык: 'en' или 'ru'
+        
+        // Система переводов
+        this.translations = {
+            en: {
+                // Main interface
+                'settings': 'Settings',
+                'language': 'Language',
+                'selectLanguage': 'Select Language',
+                'application': 'Application',
+                'refreshRates': 'Refresh Exchange Rates',
+                'lastUpdated': 'Last updated:',
+                'theme': 'Theme',
+                'dark': 'Dark',
+                'light': 'Light',
+                'green': 'Green',
+                'blue': 'Blue',
+                'purple': 'Purple',
+                'red': 'Red',
+                'about': 'About',
+                'version': 'ValutCalc v1.0.3',
+                'description': 'Currency converter with PWA support',
+                'installApp': 'Install App',
+                'updateApp': 'Update App',
+                'checkUpdates': 'Check for updates',
+                'currencySettings': 'Currency Settings',
+                'currentCurrencies': 'Current Currencies',
+                'availableCurrencies': 'Available Currencies',
+                'addCurrency': 'Add Currency',
+                'removeCurrency': 'Remove Currency',
+                'supportDeveloper': 'Support Developer',
+                'donateDescription': 'If you like this app, please consider supporting the developer',
+                'koFi': 'Ko-fi',
+                'paypal': 'PayPal',
+                'bitcoin': 'Bitcoin',
+                'bitcoinCopied': 'Bitcoin address copied to clipboard!',
+                'onlyNumbers': 'Only numbers can be pasted',
+                'noCurrencySelected': 'No currency selected for pasting',
+                'updateError': 'Update error:',
+                'loading': 'Loading...',
+                'error': 'Error',
+                'success': 'Success',
+                'cancel': 'Cancel',
+                'ok': 'OK',
+                'close': 'Close',
+                'thankYou': 'Thank you for your support!',
+                'cryptoDonation': 'Crypto donation'
+            },
+            ru: {
+                // Main interface
+                'settings': 'Настройки',
+                'language': 'Язык',
+                'selectLanguage': 'Выберите язык',
+                'application': 'Приложение',
+                'refreshRates': 'Обновить курсы валют',
+                'lastUpdated': 'Последнее обновление:',
+                'theme': 'Тема',
+                'dark': 'Тёмная',
+                'light': 'Светлая',
+                'green': 'Зелёная',
+                'blue': 'Синяя',
+                'purple': 'Фиолетовая',
+                'red': 'Красная',
+                'about': 'О программе',
+                'version': 'ValutCalc v1.0.3',
+                'description': 'Конвертер валют с поддержкой PWA',
+                'installApp': 'Установить приложение',
+                'updateApp': 'Обновить приложение',
+                'checkUpdates': 'Проверить обновления',
+                'currencySettings': 'Настройки валют',
+                'currentCurrencies': 'Текущие валюты',
+                'availableCurrencies': 'Доступные валюты',
+                'addCurrency': 'Добавить валюту',
+                'removeCurrency': 'Удалить валюту',
+                'supportDeveloper': 'Поддержать разработчика',
+                'donateDescription': 'Если вам нравится это приложение, рассмотрите возможность поддержки разработчика',
+                'koFi': 'Ko-fi',
+                'paypal': 'PayPal',
+                'bitcoin': 'Bitcoin',
+                'bitcoinCopied': 'Bitcoin адрес скопирован в буфер обмена!',
+                'onlyNumbers': 'Можно вставить только число',
+                'noCurrencySelected': 'Не выбрана валюта для вставки',
+                'updateError': 'Ошибка обновления:',
+                'loading': 'Загрузка...',
+                'error': 'Ошибка',
+                'success': 'Успешно',
+                'cancel': 'Отмена',
+                'ok': 'ОК',
+                'close': 'Закрыть',
+                'thankYou': '🙏 Спасибо за поддержку!',
+                'cryptoDonation': 'Криптодонат'
+            }
+        };
         this.availableCurrencies = {
             // Major currencies
             'USD': 'US Dollar',
@@ -181,6 +274,9 @@ class ValutCalc {
     async init() {
         console.log('ValutCalc initializing...');
         
+        // Загружаем сохраненный язык
+        this.loadLanguage();
+        
         // Принудительно очищаем кеш Service Worker
         if ('serviceWorker' in navigator) {
             try {
@@ -322,6 +418,24 @@ class ValutCalc {
 
         document.getElementById('supportModalClose').addEventListener('click', () => {
             this.closeSupportModal();
+        });
+
+        // Кнопка выбора языка
+        document.getElementById('languageBtn').addEventListener('click', () => {
+            this.openLanguageModal();
+        });
+
+        document.getElementById('languageModalClose').addEventListener('click', () => {
+            this.closeLanguageModal();
+        });
+
+        // Выбор языка
+        document.querySelectorAll('.language-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.dataset.lang;
+                this.setLanguage(lang);
+                this.closeLanguageModal();
+            });
         });
 
         // Закрытие контекстного меню при клике вне его
@@ -792,6 +906,12 @@ class ValutCalc {
         this.navigationStack.push(this.currentScreen);
         this.currentScreen = 'settings';
         
+        // Принудительно переводим все элементы при открытии настроек
+        setTimeout(() => {
+            this.translateInterface();
+            this.translateAllElements();
+        }, 50);
+        
         // Обновляем состояние кнопок
         this.updateSettingsButtons();
         
@@ -1124,6 +1244,11 @@ class ValutCalc {
         this.currentScreen = 'currency-settings';
         
         this.updateCurrencySettingsDisplay();
+        // Переводим интерфейс модального окна
+        setTimeout(() => {
+            this.translateInterface();
+            this.translateAllElements();
+        }, 50);
     }
 
     closeCurrencySettings() {
@@ -1198,7 +1323,7 @@ class ValutCalc {
                     <span class="currency-item-code">${code}</span>
                 </div>
                 <div class="currency-item-actions">
-                    <button class="add-currency-btn" data-currency="${code}">Add</button>
+                    <button class="add-currency-btn" data-currency="${code}">${this.t('addCurrency')}</button>
                 </div>
             `;
             
@@ -1828,13 +1953,13 @@ class ValutCalc {
         // Проверяем, что это число
         const numValue = parseFloat(cleanValue);
         if (isNaN(numValue) || numValue < 0) {
-            this.showPasteError('Only numbers can be pasted');
+            this.showPasteError(this.t('onlyNumbers'));
             return;
         }
         
         // Проверяем, что есть валюта для вставки
         if (!this.contextMenuCurrency) {
-            this.showPasteError('No currency selected for pasting');
+            this.showPasteError(this.t('noCurrencySelected'));
             return;
         }
         
@@ -1912,6 +2037,8 @@ class ValutCalc {
         const modal = document.getElementById('supportModal');
         if (modal) {
             modal.style.display = 'flex';
+            // Переводим интерфейс модального окна
+            this.translateInterface();
             // Добавляем анимацию появления
             setTimeout(() => {
                 modal.style.opacity = '1';
@@ -1927,6 +2054,316 @@ class ValutCalc {
                 modal.style.display = 'none';
             }, 300);
         }
+    }
+
+    // Методы для работы с языками
+    loadLanguage() {
+        const savedLanguage = localStorage.getItem('valutcalc_language');
+        if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'ru')) {
+            this.currentLanguage = savedLanguage;
+        }
+        this.updateLanguageDisplay();
+        this.translateInterface();
+    }
+
+    saveLanguage(language) {
+        localStorage.setItem('valutcalc_language', language);
+    }
+
+    setLanguage(language) {
+        if (language !== this.currentLanguage) {
+            this.currentLanguage = language;
+            this.saveLanguage(language);
+            this.updateLanguageDisplay();
+            
+            // Принудительно переводим все элементы
+            setTimeout(() => {
+                this.translateInterface();
+                this.translateAllElements();
+            }, 100);
+        }
+    }
+
+    updateLanguageDisplay() {
+        const languageBtn = document.getElementById('languageBtn');
+        if (!languageBtn) return;
+        
+        const flag = languageBtn.querySelector('.language-flag');
+        const code = languageBtn.querySelector('.language-code');
+        
+        if (flag && code) {
+            // Показываем только аббревиатуру языка, как в модальном окне
+            const expectedCode = this.currentLanguage === 'ru' ? 'RU' : 'EN';
+            
+            // Принудительно очищаем и устанавливаем новые значения
+            flag.textContent = '';
+            code.textContent = '';
+            
+            // Устанавливаем только код языка
+            code.textContent = expectedCode;
+        }
+
+        // Обновляем выбранный язык в модальном окне
+        document.querySelectorAll('.language-option').forEach(option => {
+            option.classList.remove('selected');
+            if (option.dataset.lang === this.currentLanguage) {
+                option.classList.add('selected');
+            }
+        });
+    }
+
+    translateInterface() {
+        // Переводим элементы интерфейса
+        const elements = {
+            'refreshRatesBtn': 'refreshRates',
+            'lastUpdateLabel': 'lastUpdated',
+            'themeLabel': 'theme',
+            'aboutLabel': 'about',
+            'installBtn': 'installApp',
+            'updateBtnSettings': 'updateApp',
+            'currencySettingsBtn': 'currencySettings',
+            'addCurrencyBtn': 'addCurrency',
+            'supportText': 'supportDeveloper',
+            'donateDescription': 'donateDescription',
+            'koFiBtn': 'koFi',
+            'paypalBtn': 'paypal',
+            'bitcoinBtn': 'bitcoin'
+        };
+
+        for (const [elementId, translationKey] of Object.entries(elements)) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                if (element.tagName === 'BUTTON') {
+                    // Для кнопок ищем span или переводим весь текст
+                    const span = element.querySelector('span');
+                    if (span) {
+                        span.textContent = this.translations[this.currentLanguage][translationKey];
+                    } else {
+                        // Если нет span, переводим весь текст кнопки
+                        element.textContent = this.translations[this.currentLanguage][translationKey];
+                    }
+                } else {
+                    // Для обычных элементов
+                    element.textContent = this.translations[this.currentLanguage][translationKey];
+                }
+            }
+        }
+
+        // Переводим кнопки без span (Install App, Check for updates)
+        const installBtn = document.getElementById('installBtn');
+        if (installBtn && installBtn.textContent.includes('Install')) {
+            installBtn.textContent = this.translations[this.currentLanguage]['installApp'];
+        }
+
+        const updateBtn = document.getElementById('updateBtnSettings');
+        if (updateBtn && updateBtn.textContent.includes('Update')) {
+            updateBtn.textContent = this.translations[this.currentLanguage]['updateApp'];
+        }
+
+        // Переводим заголовки секций
+        const sectionHeaders = document.querySelectorAll('.settings-section h3');
+        sectionHeaders.forEach(header => {
+            const text = header.textContent.trim();
+            if (text === 'Application' || text === 'Приложение') {
+                header.textContent = this.translations[this.currentLanguage]['application'];
+            } else if (text === 'Theme' || text === 'Тема') {
+                header.textContent = this.translations[this.currentLanguage]['theme'];
+            } else if (text === 'About' || text === 'О программе') {
+                header.textContent = this.translations[this.currentLanguage]['about'];
+            } else if (text === 'Exchange Rates' || text === 'Курсы валют') {
+                header.textContent = this.translations[this.currentLanguage]['refreshRates'];
+            }
+        });
+
+        // Переводим заголовки секций в настройках валют
+        const currencySettingsSections = document.querySelectorAll('.currency-settings-section h3');
+        currencySettingsSections.forEach((header, index) => {
+            const text = header.textContent.trim();
+            if (text === 'Current Currencies' || text === 'Текущие валюты') {
+                header.textContent = this.translations[this.currentLanguage]['currentCurrencies'];
+            } else if (text === 'Available Currencies' || text === 'Доступные валюты') {
+                header.textContent = this.translations[this.currentLanguage]['availableCurrencies'];
+            }
+        });
+
+        // Переводим опции тем
+        const themeOptions = document.querySelectorAll('.theme-option span:last-child');
+        themeOptions.forEach(option => {
+            const text = option.textContent.trim();
+            if (text === 'Dark' || text === 'Тёмная') {
+                option.textContent = this.translations[this.currentLanguage]['dark'];
+            } else if (text === 'Light' || text === 'Светлая') {
+                option.textContent = this.translations[this.currentLanguage]['light'];
+            } else if (text === 'Green' || text === 'Зелёная') {
+                option.textContent = this.translations[this.currentLanguage]['green'];
+            } else if (text === 'Blue' || text === 'Синяя') {
+                option.textContent = this.translations[this.currentLanguage]['blue'];
+            } else if (text === 'Purple' || text === 'Фиолетовая') {
+                option.textContent = this.translations[this.currentLanguage]['purple'];
+            } else if (text === 'Red' || text === 'Красная') {
+                option.textContent = this.translations[this.currentLanguage]['red'];
+            }
+        });
+
+        // Переводим заголовок модального окна языка
+        const languageModalTitle = document.querySelector('.language-modal-header h2');
+        if (languageModalTitle) {
+            languageModalTitle.textContent = this.translations[this.currentLanguage]['selectLanguage'];
+        }
+
+        // Переводим модальное окно настроек валют
+        const currencySettingsTitle = document.querySelector('.currency-settings-header h2');
+        if (currencySettingsTitle) {
+            currencySettingsTitle.textContent = this.translations[this.currentLanguage]['currencySettings'];
+        }
+
+
+        // Переводим кнопки "Add" в настройках валют
+        const addButtons = document.querySelectorAll('.add-currency-btn');
+        addButtons.forEach(button => {
+            button.textContent = this.translations[this.currentLanguage]['addCurrency'];
+        });
+
+        // Переводим модальное окно поддержки
+        const supportFooter = document.querySelector('.support-footer p');
+        if (supportFooter) {
+            supportFooter.textContent = this.translations[this.currentLanguage]['thankYou'];
+        }
+
+        const cryptoSubtitle = document.querySelector('.support-subtitle');
+        if (cryptoSubtitle && cryptoSubtitle.textContent.includes('Crypto')) {
+            cryptoSubtitle.textContent = this.translations[this.currentLanguage]['cryptoDonation'];
+        }
+    }
+
+    openLanguageModal() {
+        const modal = document.getElementById('languageModal');
+        modal.classList.add('show');
+        
+        // Переводим интерфейс модального окна
+        setTimeout(() => {
+            this.translateInterface();
+            this.translateAllElements();
+        }, 50);
+    }
+
+    closeLanguageModal() {
+        const modal = document.getElementById('languageModal');
+        modal.classList.remove('show');
+    }
+
+    t(key) {
+        return this.translations[this.currentLanguage][key] || key;
+    }
+
+    translateAllElements() {
+        // Переводим все заголовки h3
+        const h3Elements = document.querySelectorAll('h3');
+        h3Elements.forEach(element => {
+            const text = element.textContent.trim();
+            switch (text) {
+                case 'Application':
+                case 'Приложение':
+                    element.textContent = this.t('application');
+                    break;
+                case 'Theme':
+                case 'Тема':
+                    element.textContent = this.t('theme');
+                    break;
+                case 'About':
+                case 'О программе':
+                    element.textContent = this.t('about');
+                    break;
+                case 'Exchange Rates':
+                case 'Курсы валют':
+                    element.textContent = this.t('refreshRates');
+                    break;
+                case 'Current Currencies':
+                case 'Текущие валюты':
+                    element.textContent = this.t('currentCurrencies');
+                    break;
+                case 'Available Currencies':
+                case 'Доступные валюты':
+                    element.textContent = this.t('availableCurrencies');
+                    break;
+            }
+        });
+
+        // Переводим все заголовки h2
+        const h2Elements = document.querySelectorAll('h2');
+        h2Elements.forEach(element => {
+            const text = element.textContent.trim();
+            switch (text) {
+                case 'Settings':
+                case 'Настройки':
+                    element.textContent = this.t('settings');
+                    break;
+                case 'Currency Settings':
+                case 'Настройки валют':
+                    element.textContent = this.t('currencySettings');
+                    break;
+                case 'Select Language':
+                case 'Выберите язык':
+                    element.textContent = this.t('selectLanguage');
+                    break;
+            }
+        });
+
+        // Переводим все кнопки
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            const text = button.textContent.trim();
+            const span = button.querySelector('span');
+            
+            switch (text) {
+                case 'Install App':
+                case 'Установить приложение':
+                    if (span) span.textContent = this.t('installApp');
+                    else button.textContent = this.t('installApp');
+                    break;
+                case 'Check for updates':
+                case 'Проверить обновления':
+                    if (span) span.textContent = this.t('checkUpdates');
+                    else button.textContent = this.t('checkUpdates');
+                    break;
+                case 'Update App':
+                case 'Обновить приложение':
+                    if (span) span.textContent = this.t('updateApp');
+                    else button.textContent = this.t('updateApp');
+                    break;
+                case 'Currency Settings':
+                case 'Настройки валют':
+                    if (span) span.textContent = this.t('currencySettings');
+                    else button.textContent = this.t('currencySettings');
+                    break;
+                case 'Refresh Exchange Rates':
+                case 'Обновить курсы валют':
+                    if (span) span.textContent = this.t('refreshRates');
+                    else button.textContent = this.t('refreshRates');
+                    break;
+                case 'Add':
+                case 'Добавить валюту':
+                    button.textContent = this.t('addCurrency');
+                    break;
+            }
+        });
+
+        // Переводим другие элементы
+        const spans = document.querySelectorAll('span');
+        spans.forEach(span => {
+            const text = span.textContent.trim();
+            if (text === 'Last updated:' || text === 'Последнее обновление:') {
+                span.textContent = this.t('lastUpdated');
+            }
+        });
+
+        const paragraphs = document.querySelectorAll('p');
+        paragraphs.forEach(p => {
+            const text = p.textContent.trim();
+            if (text.includes('Thank you for your support!') || text.includes('🙏 Спасибо за поддержку!')) {
+                p.textContent = this.t('thankYou');
+            }
+        });
     }
 }
 

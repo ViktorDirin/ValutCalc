@@ -18,6 +18,11 @@
     <div class="app">
         <!-- Верхняя панель с кнопками -->
         <div class="top-panel">
+            <button class="language-btn" id="languageBtn" title="Language">
+                <span class="language-flag">🇺🇸</span>
+                <span class="language-code">EN</span>
+            </button>
+            
             <div class="top-panel-center">
                 <!-- Пустое пространство -->
             </div>
@@ -309,9 +314,56 @@
                 </div>
             </div>
         </div>
+
+        <!-- Currency Settings Modal -->
+        <div class="currency-settings-modal" id="currencySettingsModal" style="display: none;">
+            <div class="currency-settings-content">
+                <div class="currency-settings-header">
+                    <h2>Currency Settings</h2>
+                    <button class="currency-settings-close" id="currencySettingsClose">&times;</button>
+                </div>
+                <div class="currency-settings-body">
+                    <div class="currency-settings-section">
+                        <h3>Current Currencies</h3>
+                        <div class="current-currencies-list" id="currentCurrenciesList">
+                            <!-- Динамически генерируется в JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="currency-settings-section">
+                        <h3>Available Currencies</h3>
+                        <div class="available-currencies-list" id="availableCurrenciesList">
+                            <!-- Динамически генерируется в JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Language Selection Modal -->
+        <div class="language-modal" id="languageModal">
+            <div class="language-modal-content">
+                <div class="language-modal-header">
+                    <h2>Select Language</h2>
+                    <button class="language-modal-close" id="languageModalClose">&times;</button>
+                </div>
+                <div class="language-options">
+                    <div class="language-option" data-lang="en">
+                        <span class="language-flag">🇺🇸</span>
+                        <span class="language-name">English</span>
+                        <span class="language-code">EN</span>
+                    </div>
+                    <div class="language-option" data-lang="ru">
+                        <span class="language-flag">🇷🇺</span>
+                        <span class="language-name">Русский</span>
+                        <span class="language-code">RU</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="app.js?v=67"></script>
+    <script src="app.js?v=80"></script>
 </body>
 </html>
 < ! - -   F o r c e   r e f r e s h   - - > 
