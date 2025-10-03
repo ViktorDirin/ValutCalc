@@ -595,10 +595,22 @@ body.light-theme .currency-settings-close {
     justify-content: center;
     font-size: 16px;
     transition: all 0.3s ease;
+    z-index: 1000;
+    /* Исправляем возможные проблемы с кликами */
+    pointer-events: auto !important;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .search-clear-btn:hover {
     background: rgba(255, 107, 53, 0.2);
+}
+
+.search-clear-btn:active {
+    background: rgba(255, 107, 53, 0.3);
+    transform: translateY(-50%) scale(0.95);
 }
 
 .search-results-count {

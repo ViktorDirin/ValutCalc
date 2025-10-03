@@ -518,14 +518,36 @@ class ValutCalc {
 
             // Простой обработчик ввода
             currencySearch.addEventListener('input', (e) => {
-                this.handleCurrencySearch(e.target.value);
+                const value = e.target.value || '';
+                this.handleCurrencySearch(value);
+
+                // Показываем/скрываем кнопку очистки
+                const searchClearBtn = document.getElementById('searchClearBtn');
+                if (searchClearBtn) {
+                    searchClearBtn.style.display = value ? 'flex' : 'none';
+                }
+            });
+
+            // Обработчик фокуса для дополнительной инициализации
+            currencySearch.addEventListener('focus', () => {
+                const value = currencySearch.value || '';
+                const searchClearBtn = document.getElementById('searchClearBtn');
+                if (searchClearBtn) {
+                    searchClearBtn.style.display = value ? 'flex' : 'none';
+                }
             });
         }
 
         if (searchClearBtn) {
-            searchClearBtn.addEventListener('click', () => {
+            console.log('Adding click handler to searchClearBtn');
+            searchClearBtn.addEventListener('click', (e) => {
+                console.log('Search clear button clicked!');
+                e.preventDefault();
+                e.stopPropagation();
                 this.clearCurrencySearch();
             });
+        } else {
+            console.error('searchClearBtn not found!');
         }
     }
 
@@ -1332,6 +1354,12 @@ class ValutCalc {
         if (searchInputElement) {
             searchInputElement.value = '';
             searchInputElement.setAttribute('value', '');
+
+            // Сбрасываем поисковый запрос
+            this.currencySearchQuery = '';
+
+            // Обновляем UI поиска (скрываем кнопку очистки)
+            this.updateSearchUI();
         }
 
         // Автофокус на поле поиска после небольшого таймаута
@@ -1349,7 +1377,14 @@ class ValutCalc {
 
                 // Добавляем обработчики событий для поля поиска
                 searchInput.addEventListener('input', (e) => {
-                    app.handleCurrencySearch(e.target.value);
+                    const value = e.target.value || '';
+                    app.handleCurrencySearch(value);
+
+                    // Показываем/скрываем кнопку очистки
+                    const searchClearBtn = document.getElementById('searchClearBtn');
+                    if (searchClearBtn) {
+                        searchClearBtn.style.display = value ? 'flex' : 'none';
+                    }
                 });
 
                 searchInput.addEventListener('keydown', (e) => {
@@ -1360,6 +1395,21 @@ class ValutCalc {
 
                 searchInput.focus();
                 console.log('Search input focused');
+
+                // Инициализируем кнопку очистки с небольшой задержкой
+                setTimeout(() => {
+                    const searchClearBtn = document.getElementById('searchClearBtn');
+                    if (searchClearBtn) {
+                        console.log('Initializing searchClearBtn');
+                        searchClearBtn.style.display = 'none';
+
+                        // Убеждаемся что кнопка кликабельна
+                        searchClearBtn.style.pointerEvents = 'auto';
+                        searchClearBtn.style.cursor = 'pointer';
+                    } else {
+                        console.error('searchClearBtn not found during initialization!');
+                    }
+                }, 100);
             }
         }, 300);
 
@@ -2445,8 +2495,10 @@ class ValutCalc {
     }
 
     clearCurrencySearch() {
+        console.log('ClearCurrencySearch called');
         const searchInput = document.getElementById('currencySearch');
         if (searchInput) {
+            console.log('Search input found, clearing...');
             // Очищаем значение поля
             searchInput.value = '';
             searchInput.setAttribute('value', '');
@@ -2458,24 +2510,45 @@ class ValutCalc {
             this.updateAvailableCurrenciesList();
             this.updateSearchUI();
 
-            console.log('Currency search cleared');
+            console.log('Currency search cleared successfully');
+        } else {
+            console.error('Search input not found!');
         }
     }
 
     updateSearchUI() {
+        console.log('updateSearchUI called, query:', this.currencySearchQuery);
         const searchClearBtn = document.getElementById('searchClearBtn');
         const searchResultsCount = document.getElementById('searchResultsCount');
-        
+
+        // Управляем кнопкой очистки поиска
         if (searchClearBtn) {
-            searchClearBtn.style.display = this.currencySearchQuery ? 'flex' : 'none';
+            console.log('searchClearBtn found in updateSearchUI');
+            if (this.currencySearchQuery && this.currencySearchQuery.length > 0) {
+                console.log('Showing search clear button');
+                searchClearBtn.style.display = 'flex';
+                searchClearBtn.style.opacity = '1';
+                searchClearBtn.style.pointerEvents = 'auto';
+                searchClearBtn.style.zIndex = '999';
+            } else {
+                console.log('Hiding search clear button');
+                searchClearBtn.style.display = 'none';
+                searchClearBtn.style.opacity = '0';
+                searchClearBtn.style.pointerEvents = 'none';
+            }
+        } else {
+            console.error('searchClearBtn not found in updateSearchUI!');
         }
-        
-        if (searchResultsCount && this.currencySearchQuery) {
-            const filteredCurrencies = this.getFilteredCurrencies();
-            searchResultsCount.textContent = `${filteredCurrencies.length} ${this.t('searchResults')}`;
-            searchResultsCount.style.display = 'block';
-        } else if (searchResultsCount) {
-            searchResultsCount.style.display = 'none';
+
+        // Управляем счетчиком результатов поиска
+        if (searchResultsCount) {
+            if (this.currencySearchQuery && this.currencySearchQuery.length > 0) {
+                const filteredCurrencies = this.getFilteredCurrencies();
+                searchResultsCount.textContent = `${filteredCurrencies.length} ${this.t('searchResults')}`;
+                searchResultsCount.style.display = 'block';
+            } else {
+                searchResultsCount.style.display = 'none';
+            }
         }
     }
 
