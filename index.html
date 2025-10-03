@@ -119,43 +119,12 @@
             <span>Error loading rates. Using cached data.</span>
         </div>
 
-        <!-- Модальное окно настроек валют -->
-        <div class="currency-settings-modal" id="currencySettingsModal" style="display: none;">
-            <div class="currency-settings-content">
-                <div class="currency-settings-header">
-                    <h2>Currency Settings</h2>
-                    <button class="currency-settings-close" id="currencySettingsClose">×</button>
-                </div>
-                
-                <div class="currency-settings-body">
-                    <!-- Текущие валюты -->
-                    <div class="current-currencies-section">
-                        <h3>Current Currencies</h3>
-                        <div class="current-currencies-list" id="currentCurrenciesList">
-                            <!-- Будет заполнено динамически -->
-                        </div>
-                    </div>
-                    
-                    <!-- Разделительная черта -->
-                    <div class="currency-divider"></div>
-                    
-                    <!-- Доступные валюты -->
-                    <div class="available-currencies-section">
-                        <h3>Available Currencies</h3>
-                        <div class="available-currencies-list" id="availableCurrenciesList">
-                            <!-- Будет заполнено динамически -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Контекстное меню для валют -->
         <div class="currency-context-menu" id="currencyContextMenu">
             <div class="currency-context-menu-item" id="copyValueBtn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1z" stroke="currentColor" stroke-width="2"/>
-                    <path d="M19 3H9a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M19 3H9a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" stroke="currentColor" stroke-width="2"/>
                 </svg>
                 Copy Value
             </div>
@@ -168,15 +137,16 @@
             </div>
         </div>
 
+
         <!-- Модальное окно поддержки -->
         <div class="support-modal" id="supportModal" style="display: none;">
             <div class="support-modal-content">
                 <div class="support-modal-header">
-                    <h2>☕ Support Developer</h2>
+                    <h2 data-translate="supportDeveloper">☕ Support Developer</h2>
                     <button class="support-modal-close" id="supportModalClose">×</button>
                 </div>
                 <div class="support-modal-body">
-                    <p class="support-description">
+                    <p class="support-description" data-translate="donateDescription">
                         Thank you for using ValutCalc! If you find this app useful, 
                         consider supporting its development. Every contribution helps 
                         improve the app and add new features.
@@ -185,27 +155,27 @@
                         <a href="https://ko-fi.com/viksoftdev" target="_blank" class="support-option ko-fi">
                             <div class="support-icon">☕</div>
                             <div class="support-text">
-                                <div class="support-title">Ko-fi</div>
-                                <div class="support-subtitle">Buy me a coffee</div>
+                                <div class="support-title" data-translate="koFi">Ko-fi</div>
+                                <div class="support-subtitle" data-translate="buyMeCoffee">Buy me a coffee</div>
                             </div>
                         </a>
                         <a href="https://www.paypal.com/donate/?business=FV7BW65PE8NS6" target="_blank" class="support-option paypal">
                             <div class="support-icon">💳</div>
                             <div class="support-text">
-                                <div class="support-title">PayPal</div>
-                                <div class="support-subtitle">Send money</div>
+                                <div class="support-title" data-translate="paypal">PayPal</div>
+                                <div class="support-subtitle" data-translate="sendMoney">Send money</div>
                             </div>
                         </a>
-                        <a href="#" class="support-option bitcoin" onclick="navigator.clipboard.writeText('13MQuWuS82AuhpyCSo1n1AwE7qDruzTTBk'); alert('Bitcoin address copied to clipboard!'); return false;">
+                        <a href="#" class="support-option bitcoin" onclick="navigator.clipboard.writeText('13MQuWuS82AuhpyCSo1n1AwE7qDruzTTBk'); alert(app.t('bitcoinCopied')); return false;">
                             <div class="support-icon">₿</div>
                             <div class="support-text">
-                                <div class="support-title">Bitcoin</div>
-                                <div class="support-subtitle">Crypto donation</div>
+                                <div class="support-title" data-translate="bitcoin">Bitcoin</div>
+                                <div class="support-subtitle" data-translate="cryptoDonation">Crypto donation</div>
                             </div>
                         </a>
                     </div>
                     <div class="support-footer">
-                        <p>🙏 Thank you for your support!</p>
+                        <p data-translate="thankYou">🙏 Thank you for your support!</p>
                     </div>
                 </div>
             </div>
@@ -319,19 +289,37 @@
         <div class="currency-settings-modal" id="currencySettingsModal" style="display: none;">
             <div class="currency-settings-content">
                 <div class="currency-settings-header">
-                    <h2>Currency Settings</h2>
+                    <h2 data-translate="currencySettings">Currency Settings</h2>
                     <button class="currency-settings-close" id="currencySettingsClose">&times;</button>
                 </div>
                 <div class="currency-settings-body">
-                    <div class="currency-settings-section">
-                        <h3>Current Currencies</h3>
+                    <!-- Current Currencies Section -->
+                    <div class="currency-settings-section current-section">
+                        <h3 data-translate="currentCurrencies">Current Currencies</h3>
                         <div class="current-currencies-list" id="currentCurrenciesList">
                             <!-- Динамически генерируется в JavaScript -->
                         </div>
                     </div>
                     
-                    <div class="currency-settings-section">
-                        <h3>Available Currencies</h3>
+                    <!-- Available Currencies Section -->
+                    <div class="currency-settings-section available-section">
+                        <div class="available-section-header">
+                            <h3 data-translate="availableCurrencies">Available Currencies</h3>
+                            <div class="search-container">
+                                <input type="text"
+                                       id="currencySearch"
+                                       class="currency-search-input"
+                                       data-translate-placeholder="searchCurrencies"
+                                       placeholder="Поиск валют..."
+                                       autocomplete="off"
+                                       inputmode="text"
+                                       pattern="[A-Za-zА-Яа-я0-9\s]*"
+                                       autocapitalize="none"
+                                       spellcheck="false">
+                                <button class="search-clear-btn" id="searchClearBtn" style="display: none;">×</button>
+                            </div>
+                            <div class="search-results-count" id="searchResultsCount" style="display: none;"></div>
+                        </div>
                         <div class="available-currencies-list" id="availableCurrenciesList">
                             <!-- Динамически генерируется в JavaScript -->
                         </div>

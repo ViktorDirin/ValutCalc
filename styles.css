@@ -18,6 +18,14 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Allow text selection and input in form elements */
+input, textarea, select {
+    user-select: auto;
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+}
+
 /* Светлая тема */
 body.light-theme {
     background-color: #f5f5f5;
@@ -326,7 +334,7 @@ body.light-theme .settings-divider {
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
-    z-index: 1001;
+    z-index: 3000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -343,6 +351,33 @@ body.light-theme .settings-divider {
     border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
+}
+
+/* Полноэкранный режим на мобильных устройствах */
+@media (max-width: 768px) {
+    .currency-settings-modal {
+        padding: 0 !important;
+        align-items: stretch !important;
+        justify-content: stretch !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+    }
+    
+    .currency-settings-content {
+        max-width: none !important;
+        max-height: none !important;
+        height: 100vh !important;
+        width: 100vw !important;
+        border-radius: 0 !important;
+        border: none !important;
+        margin: 0 !important;
+        position: relative !important;
+    }
 }
 
 body.light-theme .currency-settings-content {
@@ -406,19 +441,229 @@ body.light-theme .currency-settings-close {
     padding: 20px;
     overflow-y: auto;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.current-currencies-section,
-.available-currencies-section {
+
+/* Мобильный макет - разделение пополам */
+@media (max-width: 768px) {
+    .currency-settings-body {
+        padding: 8px;
+        gap: 0;
+        height: calc(100vh - 60px);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .currency-settings-section {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+    }
+    
+    .current-section {
+        flex: 1;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        overflow-y: auto;
+        min-height: 0;
+    }
+    
+    .available-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow-y: auto;
+    }
+    
+    .available-currencies-list {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+    }
+    
+    .current-currencies-list {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+    }
+    
+    .currency-settings-header {
+        padding: 12px 16px;
+    }
+    
+    .currency-settings-header h2 {
+        font-size: 18px;
+    }
+    
+    .currency-settings-section h3 {
+        font-size: 14px;
+        margin: 0 0 8px 0;
+    }
+    
+    .available-section-header {
+        margin-bottom: 8px;
+    }
+    
+    .search-container {
+        margin-top: 4px;
+    }
+}
+
+.currency-settings-section {
     margin-bottom: 24px;
 }
 
-.current-currencies-section h3,
-.available-currencies-section h3 {
+.currency-settings-section h3 {
     margin: 0 0 12px 0;
     color: #ffffff;
     font-size: 16px;
     font-weight: 600;
+}
+
+/* Стили для поиска */
+.available-section-header {
+    margin-bottom: 12px;
+}
+
+.search-container {
+    position: relative;
+    margin-top: 8px;
+    /* Исправляем возможные проблемы с вводом текста */
+    pointer-events: auto !important;
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
+    -moz-user-select: auto !important;
+    -ms-user-select: auto !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.currency-search-input {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    /* Исправляем возможные проблемы с вводом текста */
+    pointer-events: auto !important;
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
+    -moz-user-select: auto !important;
+    -ms-user-select: auto !important;
+    position: relative !important;
+    z-index: 999 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.currency-search-input:focus {
+    outline: none;
+    border-color: #ff6b35;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+}
+
+.currency-search-input::placeholder {
+    color: #888888;
+}
+
+.search-clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.search-clear-btn:hover {
+    background: rgba(255, 107, 53, 0.2);
+}
+
+.search-results-count {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #888888;
+    text-align: right;
+}
+
+/* Светлая тема для поиска */
+body.light-theme .currency-search-input {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #333333;
+}
+
+body.light-theme .currency-search-input:focus {
+    border-color: #ff6b35;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .currency-search-input::placeholder {
+    color: #666666;
+}
+
+body.light-theme .search-clear-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333333;
+}
+
+body.light-theme .search-clear-btn:hover {
+    background: rgba(255, 107, 53, 0.1);
+}
+
+body.light-theme .search-results-count {
+    color: #666666;
+}
+
+/* Подсветка результатов поиска */
+.search-highlight {
+    background: rgba(255, 107, 53, 0.4);
+    color: #ffffff;
+    padding: 1px 3px;
+    border-radius: 3px;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.search-highlight-secondary {
+    background: rgba(255, 107, 53, 0.2);
+    color: #ffffff;
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-weight: 600;
+}
+
+body.light-theme .search-highlight {
+    background: rgba(255, 107, 53, 0.3);
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+body.light-theme .search-highlight-secondary {
+    background: rgba(255, 107, 53, 0.15);
+    color: #333333;
 }
 
 body.light-theme .current-currencies-section h3,
@@ -585,22 +830,48 @@ body.light-theme .draggable-item.drag-over {
 /* Улучшенные стили для мобильных устройств */
 @media (max-width: 768px) {
     .draggable-item {
-        padding: 16px;
-        min-height: 60px;
+        padding: 12px;
+        min-height: 50px;
     }
     
     .drag-handle {
-        font-size: 20px;
-        margin-right: 12px;
+        font-size: 18px;
+        margin-right: 10px;
     }
     
     .currency-item-name {
-        font-size: 16px;
+        font-size: 15px;
     }
     
     .currency-item-code {
-        font-size: 14px;
+        font-size: 13px;
         padding: 4px 10px;
+    }
+    
+    .remove-currency-btn {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    
+    .currency-item {
+        padding: 10px 12px;
+        min-height: 45px;
+    }
+    
+    .add-currency-btn {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    
+    .currency-search-input {
+        padding: 10px 35px 10px 12px;
+        font-size: 13px;
+    }
+    
+    .search-clear-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
     }
 }
 
@@ -630,6 +901,33 @@ body.light-theme .draggable-item.drag-over {
     border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
+}
+
+/* Полноэкранный режим для настроек на мобильных устройствах */
+@media (max-width: 768px) {
+    .settings-modal {
+        padding: 0 !important;
+        align-items: stretch !important;
+        justify-content: stretch !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+    }
+    
+    .settings-content {
+        max-width: none !important;
+        max-height: none !important;
+        height: 100vh !important;
+        width: 100vw !important;
+        border-radius: 0 !important;
+        border: none !important;
+        margin: 0 !important;
+        position: relative !important;
+    }
 }
 
 body.light-theme .settings-content {
@@ -2339,33 +2637,7 @@ body.light-theme .language-option .language-code {
     background: rgba(0, 0, 0, 0.05);
 }
 
-/* Currency Settings Modal */
-.currency-settings-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    z-index: 2000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.currency-settings-content {
-    background: #1a1a1a;
-    border-radius: 20px;
-    padding: 0;
-    max-width: 600px;
-    width: 100%;
-    max-height: 80vh;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    border: 1px solid #404040;
-}
+/* Дублирующие стили удалены - используются основные стили выше */
 
 .currency-settings-header {
     padding: 24px 24px 16px;
@@ -2404,7 +2676,7 @@ body.light-theme .language-option .language-code {
 
 .currency-settings-body {
     padding: 24px;
-    max-height: calc(80vh - 100px);
+    max-height: calc(90vh - 20px);
     overflow-y: auto;
 }
 
@@ -2428,7 +2700,7 @@ body.light-theme .language-option .language-code {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 200px;
+    max-height: calc(40vh - 2px);
     overflow-y: auto;
 }
 

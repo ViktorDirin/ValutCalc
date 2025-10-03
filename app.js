@@ -15,6 +15,7 @@ class ValutCalc {
         this.currentScreen = 'main'; // Текущий экран: 'main', 'settings', 'currency-settings'
         this.navigationStack = []; // Стек навигации
         this.currentLanguage = 'en'; // Текущий язык: 'en' или 'ru'
+        this.currencySearchQuery = ''; // Поисковый запрос для валют
         
         // Система переводов
         this.translations = {
@@ -42,14 +43,19 @@ class ValutCalc {
                 'currencySettings': 'Currency Settings',
                 'currentCurrencies': 'Current Currencies',
                 'availableCurrencies': 'Available Currencies',
-                'addCurrency': 'Add Currency',
+                'addCurrency': 'Add',
                 'removeCurrency': 'Remove Currency',
                 'supportDeveloper': 'Support Developer',
-                'donateDescription': 'If you like this app, please consider supporting the developer',
+                'donateDescription': 'Thank you for using ValutCalc! If you find this app useful, consider supporting its development. Every contribution helps improve the app and add new features.',
                 'koFi': 'Ko-fi',
                 'paypal': 'PayPal',
                 'bitcoin': 'Bitcoin',
                 'bitcoinCopied': 'Bitcoin address copied to clipboard!',
+                'buyMeCoffee': 'Buy me a coffee',
+                'sendMoney': 'Send money',
+                'cryptoDonation': 'Crypto donation',
+                'searchCurrencies': 'Search currencies...',
+                'searchResults': 'results found',
                 'onlyNumbers': 'Only numbers can be pasted',
                 'noCurrencySelected': 'No currency selected for pasting',
                 'updateError': 'Update error:',
@@ -59,8 +65,7 @@ class ValutCalc {
                 'cancel': 'Cancel',
                 'ok': 'OK',
                 'close': 'Close',
-                'thankYou': 'Thank you for your support!',
-                'cryptoDonation': 'Crypto donation'
+                'thankYou': 'Thank you for your support!'
             },
             ru: {
                 // Main interface
@@ -86,14 +91,19 @@ class ValutCalc {
                 'currencySettings': 'Настройки валют',
                 'currentCurrencies': 'Текущие валюты',
                 'availableCurrencies': 'Доступные валюты',
-                'addCurrency': 'Добавить валюту',
+                'addCurrency': 'Добавить',
                 'removeCurrency': 'Удалить валюту',
                 'supportDeveloper': 'Поддержать разработчика',
-                'donateDescription': 'Если вам нравится это приложение, рассмотрите возможность поддержки разработчика',
+                'donateDescription': 'Спасибо за использование ValutCalc! Если приложение вам полезно, рассмотрите возможность поддержки его разработки. Каждый вклад помогает улучшить приложение и добавить новые функции.',
                 'koFi': 'Ko-fi',
                 'paypal': 'PayPal',
                 'bitcoin': 'Bitcoin',
                 'bitcoinCopied': 'Bitcoin адрес скопирован в буфер обмена!',
+                'buyMeCoffee': 'Купи мне кофе',
+                'sendMoney': 'Отправить деньги',
+                'cryptoDonation': 'Криптодонат',
+                'searchCurrencies': 'Поиск валют...',
+                'searchResults': 'найдено результатов',
                 'onlyNumbers': 'Можно вставить только число',
                 'noCurrencySelected': 'Не выбрана валюта для вставки',
                 'updateError': 'Ошибка обновления:',
@@ -103,8 +113,7 @@ class ValutCalc {
                 'cancel': 'Отмена',
                 'ok': 'ОК',
                 'close': 'Закрыть',
-                'thankYou': '🙏 Спасибо за поддержку!',
-                'cryptoDonation': 'Криптодонат'
+                'thankYou': '🙏 Спасибо за поддержку!'
             }
         };
         this.availableCurrencies = {
@@ -324,6 +333,58 @@ class ValutCalc {
         } else {
             console.error('Settings button not found!');
         }
+
+        // Глобальный обработчик для отслеживания активного поля ввода
+        let activeInputElement = null;
+
+        document.addEventListener('focusin', (e) => {
+            if (e.target && e.target.id === 'currencySearch') {
+                activeInputElement = e.target;
+            }
+        });
+
+        document.addEventListener('focusout', (e) => {
+            if (e.target && e.target.id === 'currencySearch') {
+                activeInputElement = null;
+            }
+        });
+
+        // Глобальный обработчик клавиш для активного поля поиска валют
+        document.addEventListener('keydown', (e) => {
+            if (activeInputElement && document.activeElement === activeInputElement) {
+                const currentValue = activeInputElement.value || '';
+
+                // Обрабатываем backspace
+                if (e.key === 'Backspace') {
+                    const newValue = currentValue.slice(0, -1);
+                    activeInputElement.value = newValue;
+                    activeInputElement.setAttribute('value', newValue);
+                    app.handleCurrencySearch(newValue);
+
+                    // Показываем/скрываем кнопку очистки
+                    const clearBtn = document.getElementById('searchClearBtn');
+                    if (clearBtn) {
+                        clearBtn.style.display = newValue ? 'flex' : 'none';
+                    }
+                }
+                // Обрабатываем печатные символы
+                else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                    const newValue = currentValue + e.key;
+                    activeInputElement.value = newValue;
+                    activeInputElement.setAttribute('value', newValue);
+                    app.handleCurrencySearch(newValue);
+
+                    // Показываем кнопку очистки
+                    const clearBtn = document.getElementById('searchClearBtn');
+                    if (clearBtn) {
+                        clearBtn.style.display = 'flex';
+                    }
+                }
+            }
+        });
+
+
+
     }
 
     setupEventListeners() {
@@ -445,6 +506,27 @@ class ValutCalc {
                 this.hideContextMenu();
             }
         });
+
+        // Поиск валют - простой рабочий код
+        const currencySearch = document.getElementById('currencySearch');
+        const searchClearBtn = document.getElementById('searchClearBtn');
+
+        if (currencySearch) {
+            // Убираем возможные блокировки
+            currencySearch.disabled = false;
+            currencySearch.readonly = false;
+
+            // Простой обработчик ввода
+            currencySearch.addEventListener('input', (e) => {
+                this.handleCurrencySearch(e.target.value);
+            });
+        }
+
+        if (searchClearBtn) {
+            searchClearBtn.addEventListener('click', () => {
+                this.clearCurrencySearch();
+            });
+        }
     }
 
     async loadExchangeRates() {
@@ -1238,12 +1320,49 @@ class ValutCalc {
     openCurrencySettings() {
         const modal = document.getElementById('currencySettingsModal');
         modal.style.display = 'flex';
-        
+
         // Добавляем в стек навигации
         this.navigationStack.push(this.currentScreen);
         this.currentScreen = 'currency-settings';
-        
+
         this.updateCurrencySettingsDisplay();
+
+        // Убеждаемся что поле поиска пустое
+        const searchInputElement = document.getElementById('currencySearch');
+        if (searchInputElement) {
+            searchInputElement.value = '';
+            searchInputElement.setAttribute('value', '');
+        }
+
+        // Автофокус на поле поиска после небольшого таймаута
+        setTimeout(() => {
+            const searchInput = document.getElementById('currencySearch');
+            if (searchInput) {
+                // Убираем возможные блокировки
+                searchInput.disabled = false;
+                searchInput.readonly = false;
+                searchInput.removeAttribute('readonly');
+                searchInput.removeAttribute('disabled');
+
+                // Убеждаемся что поле пустое при фокусе
+                searchInput.value = '';
+
+                // Добавляем обработчики событий для поля поиска
+                searchInput.addEventListener('input', (e) => {
+                    app.handleCurrencySearch(e.target.value);
+                });
+
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        app.clearCurrencySearch();
+                    }
+                });
+
+                searchInput.focus();
+                console.log('Search input focused');
+            }
+        }, 300);
+
         // Переводим интерфейс модального окна
         setTimeout(() => {
             this.translateInterface();
@@ -1309,18 +1428,24 @@ class ValutCalc {
         const container = document.getElementById('availableCurrenciesList');
         container.innerHTML = '';
 
+        // Получаем отфильтрованные валюты
+        const filteredCurrencies = this.getFilteredCurrencies();
+        
         // Сортируем валюты по алфавиту (по названию)
-        const sortedCurrencies = Object.entries(this.availableCurrencies)
-            .filter(([code, name]) => !this.selectedCurrencies.includes(code)) // Показываем только не выбранные валюты
-            .sort((a, b) => a[1].localeCompare(b[1])); // Сортировка по названию
+        const sortedCurrencies = filteredCurrencies.sort((a, b) => a[1].localeCompare(b[1]));
 
         sortedCurrencies.forEach(([code, name]) => {
             const currencyItem = document.createElement('div');
             currencyItem.className = 'currency-item';
+            
+            // Подсвечиваем найденные фрагменты
+            const highlightedName = this.highlightSearchTerm(name, this.currencySearchQuery);
+            const highlightedCode = this.highlightSearchTerm(code, this.currencySearchQuery);
+            
             currencyItem.innerHTML = `
                 <div class="currency-item-info">
-                    <span class="currency-item-name">${name}</span>
-                    <span class="currency-item-code">${code}</span>
+                    <span class="currency-item-name">${highlightedName}</span>
+                    <span class="currency-item-code">${highlightedCode}</span>
                 </div>
                 <div class="currency-item-actions">
                     <button class="add-currency-btn" data-currency="${code}">${this.t('addCurrency')}</button>
@@ -1337,6 +1462,26 @@ class ValutCalc {
             
             container.appendChild(currencyItem);
         });
+    }
+
+    highlightSearchTerm(text, searchTerm) {
+        if (!searchTerm) return text;
+
+        // Создаем более точный поиск с учетом границ слов
+        const words = searchTerm.split(' ');
+        let highlightedText = text;
+
+        words.forEach(word => {
+            if (word.length > 0) {
+                // Подсвечиваем совпадения в начале слов и в любом месте
+                const regex = new RegExp(`(\\b${word})|(${word})`, 'gi');
+                highlightedText = highlightedText.replace(regex, (match, wordStart) => {
+                    return wordStart ? `<mark class="search-highlight">${wordStart}</mark>` : `<mark class="search-highlight-secondary">${match}</mark>`;
+                });
+            }
+        });
+
+        return highlightedText;
     }
 
     getCurrencyName(code) {
@@ -2149,6 +2294,24 @@ class ValutCalc {
             }
         }
 
+        // Переводим элементы с data-translate атрибутами
+        const translateElements = document.querySelectorAll('[data-translate]');
+        translateElements.forEach(element => {
+            const translationKey = element.getAttribute('data-translate');
+            if (this.translations[this.currentLanguage][translationKey]) {
+                element.textContent = this.translations[this.currentLanguage][translationKey];
+            }
+        });
+
+        // Переводим placeholder'ы
+        const placeholderElements = document.querySelectorAll('[data-translate-placeholder]');
+        placeholderElements.forEach(element => {
+            const translationKey = element.getAttribute('data-translate-placeholder');
+            if (this.translations[this.currentLanguage][translationKey]) {
+                element.placeholder = this.translations[this.currentLanguage][translationKey];
+            }
+        });
+
         // Переводим кнопки без span (Install App, Check for updates)
         const installBtn = document.getElementById('installBtn');
         if (installBtn && installBtn.textContent.includes('Install')) {
@@ -2254,6 +2417,107 @@ class ValutCalc {
 
     t(key) {
         return this.translations[this.currentLanguage][key] || key;
+    }
+
+
+    // Методы для поиска валют
+    handleCurrencySearch(query) {
+        // Исправляем undefined значение
+        const searchQuery = query !== undefined ? query : '';
+        console.log('Handling currency search:', searchQuery);
+
+        if (typeof searchQuery === 'string') {
+            this.currencySearchQuery = searchQuery.toLowerCase().trim();
+        } else {
+            this.currencySearchQuery = '';
+        }
+
+        this.updateAvailableCurrenciesList();
+        this.updateSearchUI();
+
+        // Автопрокрутка к результатам поиска если есть запрос
+        if (this.currencySearchQuery && this.currencySearchQuery.length > 0) {
+            const availableList = document.getElementById('availableCurrenciesList');
+            if (availableList && availableList.children.length > 0) {
+                availableList.scrollTop = 0; // Прокручиваем к началу списка
+            }
+        }
+    }
+
+    clearCurrencySearch() {
+        const searchInput = document.getElementById('currencySearch');
+        if (searchInput) {
+            // Очищаем значение поля
+            searchInput.value = '';
+            searchInput.setAttribute('value', '');
+
+            // Очищаем поисковый запрос
+            this.currencySearchQuery = '';
+
+            // Обновляем списки валют
+            this.updateAvailableCurrenciesList();
+            this.updateSearchUI();
+
+            console.log('Currency search cleared');
+        }
+    }
+
+    updateSearchUI() {
+        const searchClearBtn = document.getElementById('searchClearBtn');
+        const searchResultsCount = document.getElementById('searchResultsCount');
+        
+        if (searchClearBtn) {
+            searchClearBtn.style.display = this.currencySearchQuery ? 'flex' : 'none';
+        }
+        
+        if (searchResultsCount && this.currencySearchQuery) {
+            const filteredCurrencies = this.getFilteredCurrencies();
+            searchResultsCount.textContent = `${filteredCurrencies.length} ${this.t('searchResults')}`;
+            searchResultsCount.style.display = 'block';
+        } else if (searchResultsCount) {
+            searchResultsCount.style.display = 'none';
+        }
+    }
+
+    getFilteredCurrencies() {
+        if (!this.currencySearchQuery) {
+            return Object.entries(this.availableCurrencies)
+                .filter(([code, name]) => !this.selectedCurrencies.includes(code))
+                .sort((a, b) => a[1].localeCompare(b[1])); // Сортировка по алфавиту
+        }
+
+        return Object.entries(this.availableCurrencies)
+            .filter(([code, name]) => {
+                if (this.selectedCurrencies.includes(code)) return false;
+
+                const searchQuery = this.currencySearchQuery;
+                const codeMatch = code.toLowerCase().includes(searchQuery);
+                const nameMatch = name.toLowerCase().includes(searchQuery);
+
+                // Приоритет точным совпадениям в начале слова
+                const startsWithCode = code.toLowerCase().startsWith(searchQuery);
+                const startsWithName = name.toLowerCase().indexOf(' ' + searchQuery) === -1 &&
+                                     name.toLowerCase().startsWith(searchQuery);
+
+                return codeMatch || nameMatch || startsWithCode || startsWithName;
+            })
+            .sort((a, b) => {
+                const aCode = a[0].toLowerCase();
+                const bCode = b[0].toLowerCase();
+                const aName = a[1].toLowerCase();
+                const bName = b[1].toLowerCase();
+                const query = this.currencySearchQuery;
+
+                // Сначала показываем точные совпадения в начале
+                const aStartsWith = aCode.startsWith(query) || aName.startsWith(query);
+                const bStartsWith = bCode.startsWith(query) || bName.startsWith(query);
+
+                if (aStartsWith && !bStartsWith) return -1;
+                if (!aStartsWith && bStartsWith) return 1;
+
+                // Затем по алфавиту
+                return aName.localeCompare(bName);
+            });
     }
 
     translateAllElements() {
