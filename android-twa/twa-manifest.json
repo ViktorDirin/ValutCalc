@@ -1,0 +1,44 @@
+{
+  "packageId": "com.viksoft.valutcalc.twa",
+  "host": "viktordirin.github.io",
+  "name": "ValutCalc",
+  "launcherName": "ValutCalc",
+  "display": "standalone",
+  "themeColor": "#ff6b35",
+  "themeColorDark": "#1a1a1a",
+  "navigationColor": "#1a1a1a",
+  "navigationColorDark": "#1a1a1a",
+  "navigationDividerColor": "#ff6b35",
+  "navigationDividerColorDark": "#ff6b35",
+  "backgroundColor": "#1a1a1a",
+  "enableNotifications": false,
+  "startUrl": "/ValutCalc/",
+  "iconUrl": "https://viktordirin.github.io/ValutCalc/icons/icon-512.png",
+  "maskableIconUrl": "https://viktordirin.github.io/ValutCalc/icons/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "splashScreenSpinnerColor": "#ff6b35",
+  "enableSiteSettingsShortcut": true,
+  "enableFeature": {
+    "crossOriginIsolated": false
+  },
+  "webManifestUrl": "https://viktordirin.github.io/ValutCalc/manifest.json",
+  "appVersionName": "1.0.3",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "ValutCalc",
+      "shortName": "ValutCalc",
+      "url": "/ValutCalc/",
+      "iconUrl": "https://viktordirin.github.io/ValutCalc/icons/icon-192.png"
+    }
+  ],
+  "orientation": "portrait",
+  "fingerprints": [],
+  "generatorApp": "bubblewrap-cli",
+  "manifestVersion": 1,
+  "manifestUrl": "/manifest.json",
+  "defaultUrl": "/",
+  "supportedOrigins": [
+    "https://viktordirin.github.io"
+  ]
+}
