@@ -2850,3 +2850,95 @@ body.light-theme .currency-item-code {
     color: #666666;
     background: rgba(0, 0, 0, 0.05);
 }
+
+/* Exit Confirmation Modal */
+.exit-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    z-index: 4000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.exit-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.exit-modal-content {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 320px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.exit-modal.show .exit-modal-content {
+    transform: translateY(0);
+}
+
+.exit-modal h3 {
+    margin: 0 0 24px 0;
+    font-size: 20px;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.exit-modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.exit-modal .key, .exit-modal .clear-btn {
+    flex: 1;
+    height: 48px;
+    font-size: 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    font-weight: 600;
+}
+
+.exit-modal .key:active, .exit-modal .clear-btn:active {
+    transform: scale(0.95);
+}
+
+.exit-modal .no-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: none;
+}
+
+/* Light theme overrides */
+body.light-theme .exit-modal-content {
+    background: #ffffff;
+    border-color: rgba(0,0,0,0.1);
+}
+
+body.light-theme .exit-modal h3 {
+    color: #333333;
+}
+
+body.light-theme .exit-modal .no-btn {
+    background: rgba(0,0,0,0.05);
+    color: #333333;
+}

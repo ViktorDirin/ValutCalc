@@ -16,7 +16,9 @@ class ValutCalc {
         this.navigationStack = []; // Стек навигации
         this.currentLanguage = 'en'; // Текущий язык: 'en' или 'ru'
         this.currencySearchQuery = ''; // Поисковый запрос для валют
-        
+        this.isExiting = false; // Флаг выхода из приложения
+        this.ignoreNextPopstate = false; // Флаг игнорирования следующего popstate (для программного закрытия)
+
         // Система переводов
         this.translations = {
             en: {
@@ -65,7 +67,10 @@ class ValutCalc {
                 'cancel': 'Cancel',
                 'ok': 'OK',
                 'close': 'Close',
-                'thankYou': 'Thank you for your support!'
+                'thankYou': 'Thank you for your support!',
+                'exitConfirm': 'Exit ValutCalc?',
+                'yes': 'Yes',
+                'no': 'No'
             },
             ru: {
                 // Main interface
@@ -113,7 +118,10 @@ class ValutCalc {
                 'cancel': 'Отмена',
                 'ok': 'ОК',
                 'close': 'Закрыть',
-                'thankYou': '🙏 Спасибо за поддержку!'
+                'thankYou': '🙏 Спасибо за поддержку!',
+                'exitConfirm': 'Выйти из приложения?',
+                'yes': 'Да',
+                'no': 'Нет'
             }
         };
         this.availableCurrencies = {
@@ -136,7 +144,7 @@ class ValutCalc {
             'PLN': 'Polish Zloty',
             'CZK': 'Czech Koruna',
             'HUF': 'Hungarian Forint',
-            
+
             // Asian currencies
             'INR': 'Indian Rupee',
             'THB': 'Thai Baht',
@@ -154,7 +162,7 @@ class ValutCalc {
             'LAK': 'Lao Kip',
             'MOP': 'Macanese Pataca',
             'BND': 'Brunei Dollar',
-            
+
             // Middle East & Africa
             'AED': 'UAE Dirham',
             'SAR': 'Saudi Riyal',
@@ -172,7 +180,7 @@ class ValutCalc {
             'IQD': 'Iraqi Dinar',
             'SYP': 'Syrian Pound',
             'YER': 'Yemeni Rial',
-            
+
             // African currencies
             'ZAR': 'South African Rand',
             'MAD': 'Moroccan Dirham',
@@ -202,7 +210,7 @@ class ValutCalc {
             'MRU': 'Mauritanian Ouguiya',
             'SHP': 'Saint Helena Pound',
             'FKP': 'Falkland Islands Pound',
-            
+
             // Europe
             'RON': 'Romanian Leu',
             'BGN': 'Bulgarian Lev',
@@ -223,7 +231,7 @@ class ValutCalc {
             'UZS': 'Uzbekistani Som',
             'TJS': 'Tajikistani Somoni',
             'TMT': 'Turkmenistani Manat',
-            
+
             // Americas
             'BRL': 'Brazilian Real',
             'ARS': 'Argentine Peso',
@@ -256,7 +264,7 @@ class ValutCalc {
             'KYD': 'Cayman Islands Dollar',
             'BMD': 'Bermudian Dollar',
             'BSD': 'Bahamian Dollar',
-            
+
             // Oceania
             'FJD': 'Fijian Dollar',
             'PGK': 'Papua New Guinean Kina',
@@ -268,7 +276,7 @@ class ValutCalc {
             'KID': 'Kiribati Dollar',
             'NRU': 'Nauruan Dollar',
             'MOP': 'Macanese Pataca',
-            
+
             // Special currencies
             'XDR': 'Special Drawing Rights',
             'XAG': 'Silver Ounce',
@@ -276,16 +284,16 @@ class ValutCalc {
             'XPD': 'Palladium Ounce',
             'XPT': 'Platinum Ounce'
         };
-        
+
         this.init();
     }
 
     async init() {
         console.log('ValutCalc initializing...');
-        
+
         // Загружаем сохраненный язык
         this.loadLanguage();
-        
+
         // Принудительно очищаем кеш Service Worker
         if ('serviceWorker' in navigator) {
             try {
@@ -298,7 +306,7 @@ class ValutCalc {
                 console.log('No Service Worker to unregister');
             }
         }
-        
+
         // Очищаем кеш браузера для принудительной загрузки новой версии
         if ('caches' in window) {
             try {
@@ -311,7 +319,7 @@ class ValutCalc {
                 console.log('No cache to clear');
             }
         }
-        
+
         this.loadTheme();
         this.loadSelectedCurrencies();
         this.setupEventListeners();
@@ -320,13 +328,13 @@ class ValutCalc {
         this.updateDisplay();
         this.checkForUpdates();
         this.setupPWAInstall();
-        
+
         // Проверяем, что модальное окно настроек существует
         const settingsModal = document.getElementById('settingsModal');
         const settingsBtn = document.getElementById('settingsBtn');
         console.log('Settings modal on init:', settingsModal);
         console.log('Settings button on init:', settingsBtn);
-        
+
         // Проверяем что кнопка настроек найдена
         if (settingsBtn) {
             console.log('Settings button found');
@@ -385,6 +393,13 @@ class ValutCalc {
 
 
 
+
+        // Скрываем модальное окно выхода при загрузке (на всякий случай)
+        const exitModal = document.getElementById('exitModal');
+        if (exitModal) exitModal.style.display = 'none';
+
+        // History API initial state
+        history.pushState({ screen: 'main' }, '');
     }
 
     setupEventListeners() {
@@ -393,7 +408,7 @@ class ValutCalc {
             row.addEventListener('click', () => {
                 this.setActiveCurrency(row.dataset.currency);
             });
-            
+
             // Долгое нажатие для контекстного меню
             this.setupLongPress(row);
         });
@@ -549,12 +564,63 @@ class ValutCalc {
         } else {
             console.error('searchClearBtn not found!');
         }
+
+        // Exit Modal Buttons
+        const exitYesBtn = document.getElementById('exitYesBtn');
+        const exitNoBtn = document.getElementById('exitNoBtn');
+
+        if (exitYesBtn) {
+            exitYesBtn.addEventListener('click', () => {
+                // Устанавливаем флаг выхода, чтобы предотвратить повторное открытие модального окна
+                this.isExiting = true;
+
+                // Если пользователь нажал "Да", пытаемся закрыть приложение
+                if (navigator.app && navigator.app.exitApp) {
+                    navigator.app.exitApp();
+                } else {
+                    // Стратегия для браузера:
+                    // 1. Пробуем window.close() (обычно работает только для окон, открытых скриптом)
+                    try {
+                        window.close();
+                    } catch (e) {
+                        console.log('Cannot close window via script');
+                    }
+
+                    // 2. Возвращаемся глубоко назад в истории, надеясь закрыть PWA/вкладку
+                    // Мы находимся в 'exit-confirm'. Перед этим был 'main'.
+                    // Возврат на 2 шага назад должен вывести нас из нашего приложения
+                    history.go(-2);
+
+                    // Если мы все еще здесь (пользователь в браузере с длинной историей),
+                    // и history.go(-2) просто перекинул нас назад, но не закрыл вкладку...
+                    // Или если go(-2) не сработал как ожидалось (например если истории нет).
+
+                    // Fallback, если exit не сработал и мы все еще в приложении:
+                    // Сбрасываем флаг и возвращаем пользователя в приложение, чтобы не было фриза
+                    this.isExiting = false;
+                    this.closeExitModal();
+
+                    // Важно: восстанавливаем стейт main, так же как кнопка No, 
+                    // чтобы кнопка Назад снова работала
+                    history.pushState({ screen: 'main' }, '');
+                }
+            });
+        }
+
+        if (exitNoBtn) {
+            exitNoBtn.addEventListener('click', () => {
+                this.closeExitModal();
+                // Вместо history.back(), который может оставить нас с пустым стеком,
+                // мы явно пушим состояние main, чтобы следующий Back сработал корректно
+                history.pushState({ screen: 'main' }, '');
+            });
+        }
     }
 
     async loadExchangeRates() {
         const loading = document.getElementById('loading');
         const error = document.getElementById('error');
-        
+
         // Принудительно скрываем загрузку через 15 секунд
         const forceHideTimeout = setTimeout(() => {
             loading.classList.add('hidden');
@@ -564,7 +630,7 @@ class ValutCalc {
                 error.style.display = 'none';
             }, 5000);
         }, 15000);
-        
+
         try {
             // Пробуем загрузить из кэша
             const cachedRates = this.getCachedRates();
@@ -578,13 +644,13 @@ class ValutCalc {
             // Загружаем с API с таймаутом
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
-            
+
             const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD', {
                 signal: controller.signal
             });
-            
+
             clearTimeout(timeoutId);
-            
+
             if (!response.ok) {
                 throw new Error('API request failed');
             }
@@ -594,12 +660,12 @@ class ValutCalc {
 
             // Сохраняем в кэш
             this.cacheRates(this.exchangeRates);
-            
+
             clearTimeout(forceHideTimeout);
             loading.classList.add('hidden');
         } catch (err) {
             console.error('Error loading exchange rates:', err);
-            
+
             // Пробуем использовать кэшированные данные
             const cachedRates = this.getCachedRates();
             if (cachedRates) {
@@ -680,7 +746,7 @@ class ValutCalc {
                 error.style.display = 'block';
                 error.textContent = 'Using approximate rates. Check your internet connection.';
             }
-            
+
             clearTimeout(forceHideTimeout);
             loading.classList.add('hidden');
         }
@@ -717,13 +783,13 @@ class ValutCalc {
         this.activeCurrency = currency;
         this.currentValue = '1';
         this.hasUserInput = false; // Сбрасываем флаг при смене валюты
-        
+
         // Обновляем активную строку
         document.querySelectorAll('.currency-row').forEach(row => {
             row.classList.remove('active');
         });
         document.querySelector(`[data-currency="${currency}"]`).classList.add('active');
-        
+
         // Обновляем отображение
         this.updateDisplay();
     }
@@ -740,7 +806,7 @@ class ValutCalc {
 
     handleKeyboardInput(e) {
         e.preventDefault();
-        
+
         if (e.key >= '0' && e.key <= '9') {
             this.addDigit(e.key);
         } else if (e.key === '.' || e.key === ',') {
@@ -814,10 +880,10 @@ class ValutCalc {
 
     updateDisplay() {
         const value = parseFloat(this.currentValue) || 0;
-        
+
         // Обновляем отображение валют на основе выбранных
         this.updateCurrencyRows();
-        
+
         // Обновляем все валюты
         document.querySelectorAll('.currency-row').forEach(row => {
             const currency = row.dataset.currency;
@@ -833,7 +899,7 @@ class ValutCalc {
 
         // Определяем режим отображения
         const isCompactMode = this.selectedCurrencies.length > 8;
-        
+
         if (isCompactMode) {
             currencySection.classList.add('compact-mode');
         } else {
@@ -843,11 +909,11 @@ class ValutCalc {
         this.selectedCurrencies.forEach(currencyCode => {
             const currencyName = this.getCurrencyName(currencyCode);
             const isActive = currencyCode === this.activeCurrency;
-            
+
             const currencyRow = document.createElement('div');
             currencyRow.className = `currency-row ${isActive ? 'active' : ''}`;
             currencyRow.dataset.currency = currencyCode;
-            
+
             if (isCompactMode) {
                 // Компактный режим: только аббревиатура и цифры
                 currencyRow.innerHTML = `
@@ -864,15 +930,15 @@ class ValutCalc {
                     <div class="currency-value">0</div>
                 `;
             }
-            
+
             // Добавляем обработчик клика
             currencyRow.addEventListener('click', () => {
                 this.setActiveCurrency(currencyCode);
             });
-            
+
             // Добавляем долгое нажатие для контекстного меню
             this.setupLongPress(currencyRow);
-            
+
             currencySection.appendChild(currencyRow);
         });
     }
@@ -897,7 +963,7 @@ class ValutCalc {
 
     formatValue(value) {
         if (value === 0) return '0';
-        
+
         // Форматируем с 2 знаками после запятой и пробелами для тысяч
         const formatted = value.toFixed(2);
         const parts = formatted.split('.');
@@ -909,7 +975,7 @@ class ValutCalc {
         // Загружаем сохраненную тему из localStorage
         const savedTheme = localStorage.getItem('valutcalc_theme') || 'dark';
         this.changeTheme(savedTheme);
-        
+
         // Устанавливаем правильный radio button
         const themeRadio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
         if (themeRadio) {
@@ -920,7 +986,7 @@ class ValutCalc {
     toggleTheme() {
         // Получаем текущую тему
         const currentTheme = localStorage.getItem('valutcalc_theme') || 'dark';
-        
+
         // Умное переключение: темные темы → Light, Light → Dark
         if (currentTheme === 'light') {
             this.changeTheme('dark');
@@ -935,10 +1001,10 @@ class ValutCalc {
                 const registration = await navigator.serviceWorker.getRegistration();
                 if (registration) {
                     this.serviceWorkerRegistration = registration;
-                    
+
                     // Проверяем обновления
                     await registration.update();
-                    
+
                     // Слушаем события обновления
                     registration.addEventListener('updatefound', () => {
                         this.showUpdateButton();
@@ -954,7 +1020,7 @@ class ValutCalc {
         const updateBtn = document.getElementById('updateBtn');
         updateBtn.style.display = 'flex';
         this.updateAvailable = true;
-        
+
         // Показываем уведомление
         this.showUpdateNotification();
     }
@@ -969,7 +1035,7 @@ class ValutCalc {
                 <button class="update-notification-btn" onclick="this.parentElement.parentElement.remove()">×</button>
             </div>
         `;
-        
+
         // Добавляем стили для уведомления
         notification.style.cssText = `
             position: fixed;
@@ -984,9 +1050,9 @@ class ValutCalc {
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 107, 53, 0.3);
         `;
-        
+
         document.body.appendChild(notification);
-        
+
         // Автоматически скрываем через 5 секунд
         setTimeout(() => {
             if (notification.parentElement) {
@@ -1005,33 +1071,47 @@ class ValutCalc {
         } else {
             console.error('Settings modal not found!');
         }
-        
-        // Добавляем в стек навигации
+
+        // Добавляем в стек навигации и History API
         this.navigationStack.push(this.currentScreen);
         this.currentScreen = 'settings';
-        
+        history.pushState({ screen: 'settings' }, '');
+
         // Принудительно переводим все элементы при открытии настроек
         setTimeout(() => {
             this.translateInterface();
             this.translateAllElements();
         }, 50);
-        
+
         // Обновляем состояние кнопок
         this.updateSettingsButtons();
-        
+
         // Обновляем информацию о последнем обновлении курсов
         this.updateLastUpdateTime();
-        
+
         // Устанавливаем текущую тему
         const currentTheme = this.isDarkTheme ? 'dark' : 'light';
         document.querySelector(`input[name="theme"][value="${currentTheme}"]`).checked = true;
     }
 
     closeSettings() {
+        // Явно закрываем UI и обновляем currentScreen
+        this._closeSettingsUI();
+
+        // Ставим флаг, чтобы popstate event listener проигнорировал следующее событие
+        // (которое мы вызовем через history.back())
+        this.ignoreNextPopstate = true;
+
+        // Синхронизируем историю браузера
+        history.back();
+    }
+
+    // Метод для фактического закрытия UI (вызывается из handleBackButton)
+    _closeSettingsUI() {
         const modal = document.getElementById('settingsModal');
-        modal.style.display = 'none';
-        
-        // Возвращаемся к предыдущему экрану
+        if (modal) modal.style.display = 'none';
+
+        // Возвращаемся к предыдущему экрану логически
         if (this.navigationStack.length > 0) {
             this.currentScreen = this.navigationStack.pop();
         } else {
@@ -1042,7 +1122,7 @@ class ValutCalc {
     updateSettingsButtons() {
         const installBtn = document.getElementById('installBtn');
         const updateBtn = document.getElementById('updateBtnSettings');
-        
+
         // Показываем кнопку установки если приложение не установлено И можно установить
         if (!this.isInstalled && (this.canInstall || this.deferredPrompt)) {
             installBtn.style.display = 'flex';
@@ -1068,7 +1148,7 @@ class ValutCalc {
         } else {
             installBtn.style.display = 'none';
         }
-        
+
         // Всегда показываем кнопку обновления
         updateBtn.style.display = 'flex';
         if (this.updateAvailable) {
@@ -1096,13 +1176,13 @@ class ValutCalc {
         if (this.deferredPrompt) {
             this.deferredPrompt.prompt();
             const { outcome } = await this.deferredPrompt.userChoice;
-            
+
             if (outcome === 'accepted') {
                 console.log('PWA installed');
                 this.isInstalled = true;
                 this.updateSettingsButtons();
             }
-            
+
             this.deferredPrompt = null;
         } else {
             // Показываем инструкции для ручной установки
@@ -1113,9 +1193,9 @@ class ValutCalc {
     showInstallInstructions() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isAndroid = /Android/.test(navigator.userAgent);
-        
+
         let instructions = '';
-        
+
         if (isIOS) {
             instructions = `
                 <div style="text-align: left; line-height: 1.6;">
@@ -1149,7 +1229,7 @@ class ValutCalc {
                 </div>
             `;
         }
-        
+
         // Создаем модальное окно с инструкциями
         const modal = document.createElement('div');
         modal.style.cssText = `
@@ -1166,7 +1246,7 @@ class ValutCalc {
             justify-content: center;
             padding: 20px;
         `;
-        
+
         modal.innerHTML = `
             <div style="
                 background: #1a1a1a;
@@ -1192,14 +1272,14 @@ class ValutCalc {
                 ">Got it</button>
             </div>
         `;
-        
+
         document.body.appendChild(modal);
     }
 
     changeTheme(theme) {
         // Удаляем все классы тем
         document.body.classList.remove('light-theme', 'green-theme', 'blue-theme', 'purple-theme', 'red-theme');
-        
+
         // Устанавливаем новую тему
         if (theme === 'light') {
             this.isDarkTheme = false;
@@ -1220,7 +1300,7 @@ class ValutCalc {
             // По умолчанию темная тема
             this.isDarkTheme = true;
         }
-        
+
         localStorage.setItem('valutcalc_theme', theme);
     }
 
@@ -1230,7 +1310,7 @@ class ValutCalc {
         }
 
         const updateBtn = document.getElementById('updateBtnSettings');
-        
+
         // Показываем состояние загрузки
         updateBtn.innerHTML = `
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="updating">
@@ -1251,20 +1331,20 @@ class ValutCalc {
                 );
                 console.log('Cache cleared before update');
             }
-            
+
             // Принудительно обновляем Service Worker
             await this.serviceWorkerRegistration.update();
-            
+
             // Если есть ожидающий Service Worker, активируем его
             if (this.serviceWorkerRegistration.waiting) {
                 this.serviceWorkerRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
             }
-            
+
             // Перезагружаем страницу для применения обновления
             setTimeout(() => {
                 window.location.reload(true); // Принудительная перезагрузка
             }, 1000);
-            
+
         } catch (error) {
             console.error('Update error:', error);
             updateBtn.innerHTML = `
@@ -1317,7 +1397,7 @@ class ValutCalc {
                 // Проверяем, поддерживает ли браузер PWA
                 const isAndroid = /Android/.test(navigator.userAgent);
                 const isChrome = /Chrome/.test(navigator.userAgent);
-                
+
                 if (isAndroid && isChrome) {
                     // На Android Chrome всегда можно установить PWA вручную
                     this.canInstall = true;
@@ -1343,9 +1423,10 @@ class ValutCalc {
         const modal = document.getElementById('currencySettingsModal');
         modal.style.display = 'flex';
 
-        // Добавляем в стек навигации
+        // Добавляем в стек навигации и History API
         this.navigationStack.push(this.currentScreen);
         this.currentScreen = 'currency-settings';
+        history.pushState({ screen: 'currency-settings' }, '');
 
         this.updateCurrencySettingsDisplay();
 
@@ -1421,9 +1502,21 @@ class ValutCalc {
     }
 
     closeCurrencySettings() {
+        // Явно закрываем UI и обновляем currentScreen
+        this._closeCurrencySettingsUI();
+
+        // Ставим флаг для игнорирования popstate
+        this.ignoreNextPopstate = true;
+
+        // Синхронизируем историю
+        history.back();
+    }
+
+    // Метод для фактического закрытия UI
+    _closeCurrencySettingsUI() {
         const modal = document.getElementById('currencySettingsModal');
-        modal.style.display = 'none';
-        
+        if (modal) modal.style.display = 'none';
+
         // Возвращаемся к предыдущему экрану
         if (this.navigationStack.length > 0) {
             this.currentScreen = this.navigationStack.pop();
@@ -1458,10 +1551,10 @@ class ValutCalc {
                     <button class="remove-currency-btn" data-currency="${currencyCode}">×</button>
                 </div>
             `;
-            
+
             // Добавляем обработчики drag & drop
             this.addDragListeners(currencyItem);
-            
+
             // Добавляем обработчик для кнопки удаления
             const removeBtn = currencyItem.querySelector('.remove-currency-btn');
             removeBtn.addEventListener('click', (e) => {
@@ -1469,7 +1562,7 @@ class ValutCalc {
                 e.preventDefault();
                 this.removeCurrency(currencyCode);
             });
-            
+
             container.appendChild(currencyItem);
         });
     }
@@ -1480,18 +1573,18 @@ class ValutCalc {
 
         // Получаем отфильтрованные валюты
         const filteredCurrencies = this.getFilteredCurrencies();
-        
+
         // Сортируем валюты по алфавиту (по названию)
         const sortedCurrencies = filteredCurrencies.sort((a, b) => a[1].localeCompare(b[1]));
 
         sortedCurrencies.forEach(([code, name]) => {
             const currencyItem = document.createElement('div');
             currencyItem.className = 'currency-item';
-            
+
             // Подсвечиваем найденные фрагменты
             const highlightedName = this.highlightSearchTerm(name, this.currencySearchQuery);
             const highlightedCode = this.highlightSearchTerm(code, this.currencySearchQuery);
-            
+
             currencyItem.innerHTML = `
                 <div class="currency-item-info">
                     <span class="currency-item-name">${highlightedName}</span>
@@ -1501,7 +1594,7 @@ class ValutCalc {
                     <button class="add-currency-btn" data-currency="${code}">${this.t('addCurrency')}</button>
                 </div>
             `;
-            
+
             // Добавляем обработчик для кнопки добавления
             const addBtn = currencyItem.querySelector('.add-currency-btn');
             addBtn.addEventListener('click', (e) => {
@@ -1509,7 +1602,7 @@ class ValutCalc {
                 e.preventDefault();
                 this.addCurrency(code);
             });
-            
+
             container.appendChild(currencyItem);
         });
     }
@@ -1561,7 +1654,7 @@ class ValutCalc {
     // Методы для drag & drop (desktop) и touch (mobile)
     addDragListeners(item) {
         const dragHandle = item.querySelector('.drag-handle');
-        
+
         if (!dragHandle) return;
 
         let draggedElement = null;
@@ -1599,12 +1692,12 @@ class ValutCalc {
         item.addEventListener('drop', (e) => {
             e.preventDefault();
             item.classList.remove('drag-over');
-            
+
             const draggedCurrency = e.dataTransfer.getData('text/html');
             const draggedElement = document.createElement('div');
             draggedElement.innerHTML = draggedCurrency;
             const draggedCurrencyCode = draggedElement.querySelector('.draggable-item').dataset.currency;
-            
+
             if (draggedCurrencyCode !== item.dataset.currency) {
                 this.reorderCurrencies(draggedCurrencyCode, item.dataset.currency);
             }
@@ -1624,21 +1717,21 @@ class ValutCalc {
             dragHandle.addEventListener('touchmove', (e) => {
                 e.preventDefault();
                 if (!draggedElement) return;
-                
+
                 touchCurrentY = e.touches[0].clientY;
                 const deltaY = Math.abs(touchCurrentY - touchStartY);
-                
+
                 if (deltaY > 10) {
                     isDragging = true;
                     item.classList.add('dragging');
-                    
+
                     // Показываем визуальную обратную связь
                     const allItems = document.querySelectorAll('.draggable-item');
                     allItems.forEach(otherItem => {
                         if (otherItem !== item) {
                             const rect = otherItem.getBoundingClientRect();
                             const itemCenterY = rect.top + rect.height / 2;
-                            
+
                             if (Math.abs(touchCurrentY - itemCenterY) < rect.height / 2) {
                                 otherItem.classList.add('drag-over');
                             } else {
@@ -1666,7 +1759,7 @@ class ValutCalc {
                         const rect = otherItem.getBoundingClientRect();
                         const itemCenterY = rect.top + rect.height / 2;
                         const distance = Math.abs(touchCurrentY - itemCenterY);
-                        
+
                         if (distance < minDistance && distance < rect.height) {
                             minDistance = distance;
                             targetItem = otherItem;
@@ -1693,14 +1786,14 @@ class ValutCalc {
     reorderCurrencies(draggedCurrency, targetCurrency) {
         const draggedIndex = this.selectedCurrencies.indexOf(draggedCurrency);
         const targetIndex = this.selectedCurrencies.indexOf(targetCurrency);
-        
+
         if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
             // Создаем новый массив
             const newCurrencies = [...this.selectedCurrencies];
-            
+
             // Удаляем перетаскиваемую валюту
             newCurrencies.splice(draggedIndex, 1);
-            
+
             // Вычисляем новую позицию
             let newTargetIndex = targetIndex;
             if (draggedIndex < targetIndex) {
@@ -1708,13 +1801,13 @@ class ValutCalc {
                 newTargetIndex = targetIndex - 1;
             }
             // Если перетаскиваем вверх - позиция остается той же
-            
+
             // Вставляем валюту на новую позицию
             newCurrencies.splice(newTargetIndex, 0, draggedCurrency);
-            
+
             // Обновляем массив
             this.selectedCurrencies = newCurrencies;
-            
+
             // Сохраняем новый порядок
             this.saveSelectedCurrencies();
             this.updateCurrencySettingsDisplay();
@@ -1739,7 +1832,7 @@ class ValutCalc {
             justify-content: center;
             padding: 20px;
         `;
-        
+
         modal.innerHTML = `
             <div style="
                 background: #1a1a1a;
@@ -1782,9 +1875,9 @@ class ValutCalc {
                 " onmouseover="this.style.background='#e55a2b'" onmouseout="this.style.background='#ff6b35'">OK</button>
             </div>
         `;
-        
+
         document.body.appendChild(modal);
-        
+
         // Автоматически закрываем через 5 секунд
         setTimeout(() => {
             if (modal.parentElement) {
@@ -1794,43 +1887,103 @@ class ValutCalc {
     }
 
     setupBackButtonHandling() {
-        // Обработка системной кнопки "Назад" на Android
-        document.addEventListener('backbutton', (event) => {
-            event.preventDefault();
-            this.handleBackButton();
-        }, false);
-
-        // Обработка popstate для браузера
+        // Обработка popstate для браузера и Android "Back"
         window.addEventListener('popstate', (event) => {
-            event.preventDefault();
-            this.handleBackButton();
+            // Если выставлен флаг игнорирования (например, при клике на крестик), сбрасываем его и выходим
+            if (this.ignoreNextPopstate) {
+                this.ignoreNextPopstate = false;
+                return;
+            }
+
+            // Если мы в процессе выхода, игнорируем изменения истории (чтобы не открыть модалку снова)
+            if (this.isExiting) return;
+
+            // Если state null, значит мы вернулись в какое-то неопределенное состояние, считаем main
+            const state = event.state || { screen: 'main' };
+
+            // Если мы были на каком-то экране и нажали Назад, 
+            // мы должны закрыть этот экран.
+
+            this.handleBackButton(state.screen);
         });
 
         // Обработка клавиши Escape для тестирования на десктопе
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 e.preventDefault();
-                this.handleBackButton();
+                // Эмулируем нажатие назад
+                if (this.currentScreen !== 'main') {
+                    history.back();
+                } else {
+                    // Если мы на главной, Escape вызывает модалку выхода
+                    this.openExitModal();
+                }
             }
         });
     }
 
 
-    handleBackButton() {
-        // Простое закрытие модальных окон
-        if (this.currentScreen === 'currency-settings') {
-            this.closeCurrencySettings();
-        } else if (this.currentScreen === 'settings') {
-            this.closeSettings();
+    handleBackButton(targetScreen) {
+        // Определяем текущий экран (откуда уходим)
+        const previousScreen = this.currentScreen;
+
+        // Логика закрытия UI в зависимости от того, ГДЕ мы были
+        if (previousScreen === 'currency-settings') {
+            this._closeCurrencySettingsUI();
+        } else if (previousScreen === 'settings') {
+            this._closeSettingsUI();
+        } else if (previousScreen === 'exit-confirm') {
+            this._closeExitModalUI();
+        } else if (previousScreen === 'main') {
+            // Если мы на главной и нажали назад (событие popstate сработало, значит мы ушли "до" main)
+            // Но мы пушили 'main' в init.
+            // Если мы здесь, значит стек истории пуст или мы вышли за его пределы?
+            // На самом деле, если мы на main, мы должны показать exit modal.
+            // Но чтобы показать его и поддержать кнопку "Назад" в нем, мы должны запушить стейт.
+            this.openExitModal();
         }
-        // На главном экране ничего не делаем
+    }
+
+    openExitModal() {
+        if (this.currentScreen === 'exit-confirm') return;
+
+        const modal = document.getElementById('exitModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            // Анимация
+            requestAnimationFrame(() => {
+                modal.classList.add('show');
+            });
+
+            // Перевод
+            this.translateInterface();
+        }
+
+        this.currentScreen = 'exit-confirm';
+        // Пушим состояние выхода, чтобы кнопка "Назад" закрыла его
+        history.pushState({ screen: 'exit-confirm' }, '');
+    }
+
+    closeExitModal() {
+        this._closeExitModalUI();
+    }
+
+    _closeExitModalUI() {
+        const modal = document.getElementById('exitModal');
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+        this.currentScreen = 'main';
     }
 
 
     async refreshExchangeRates() {
         const refreshBtn = document.getElementById('refreshRatesBtn');
         const lastUpdateTime = document.getElementById('lastUpdateTime');
-        
+
         // Показываем состояние загрузки
         refreshBtn.disabled = true;
         refreshBtn.innerHTML = `
@@ -1855,13 +2008,13 @@ class ValutCalc {
 
             // Сохраняем в кэш с новым временем
             this.cacheRates(this.exchangeRates);
-            
+
             // Обновляем отображение
             this.updateDisplay();
-            
+
             // Обновляем время последнего обновления
             this.updateLastUpdateTime();
-            
+
             // Показываем успешное обновление
             refreshBtn.innerHTML = `
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -1870,7 +2023,7 @@ class ValutCalc {
                 </svg>
                 <span>Updated!</span>
             `;
-            
+
             // Возвращаем к исходному состоянию через 2 секунды
             setTimeout(() => {
                 refreshBtn.innerHTML = `
@@ -1883,10 +2036,10 @@ class ValutCalc {
                 `;
                 refreshBtn.disabled = false;
             }, 2000);
-            
+
         } catch (error) {
             console.error('Error refreshing exchange rates:', error);
-            
+
             // Показываем ошибку
             refreshBtn.innerHTML = `
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -1895,7 +2048,7 @@ class ValutCalc {
                 <span>Error</span>
             `;
             lastUpdateTime.textContent = 'Update failed';
-            
+
             // Возвращаем к исходному состоянию через 3 секунды
             setTimeout(() => {
                 refreshBtn.innerHTML = `
@@ -1959,7 +2112,7 @@ class ValutCalc {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
             isLongPress = false;
-            
+
             longPressTimer = setTimeout(() => {
                 isLongPress = true;
                 this.showContextMenu(e, element);
@@ -1970,7 +2123,7 @@ class ValutCalc {
             if (longPressTimer) {
                 const deltaX = Math.abs(e.touches[0].clientX - startX);
                 const deltaY = Math.abs(e.touches[0].clientY - startY);
-                
+
                 // Если палец сдвинулся больше чем на 10px, отменяем долгое нажатие
                 if (deltaX > 10 || deltaY > 10) {
                     clearTimeout(longPressTimer);
@@ -1984,7 +2137,7 @@ class ValutCalc {
                 clearTimeout(longPressTimer);
                 longPressTimer = null;
             }
-            
+
             // Если это было долгое нажатие, предотвращаем обычный клик
             if (isLongPress) {
                 e.preventDefault();
@@ -2004,7 +2157,7 @@ class ValutCalc {
                 startX = e.clientX;
                 startY = e.clientY;
                 isLongPress = false;
-                
+
                 longPressTimer = setTimeout(() => {
                     isLongPress = true;
                     this.showContextMenu(e, element);
@@ -2016,7 +2169,7 @@ class ValutCalc {
             if (longPressTimer) {
                 const deltaX = Math.abs(e.clientX - startX);
                 const deltaY = Math.abs(e.clientY - startY);
-                
+
                 if (deltaX > 10 || deltaY > 10) {
                     clearTimeout(longPressTimer);
                     longPressTimer = null;
@@ -2042,13 +2195,13 @@ class ValutCalc {
     showContextMenu(event, currencyElement) {
         const contextMenu = document.getElementById('currencyContextMenu');
         const currencyCode = currencyElement.dataset.currency;
-        
+
         // Сохраняем ссылку на текущую валюту
         this.contextMenuCurrency = currencyCode;
-        
+
         // Показываем визуальную обратную связь
         currencyElement.classList.add('long-press-active');
-        
+
         // Позиционируем меню
         let x, y;
         if (event.touches && event.touches[0]) {
@@ -2060,24 +2213,24 @@ class ValutCalc {
             x = event.clientX;
             y = event.clientY;
         }
-        
+
         // Учитываем границы экрана
         const menuWidth = 160;
         const menuHeight = 80;
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
-        
+
         if (x + menuWidth > screenWidth) {
             x = screenWidth - menuWidth - 10;
         }
         if (y + menuHeight > screenHeight) {
             y = screenHeight - menuHeight - 10;
         }
-        
+
         contextMenu.style.left = x + 'px';
         contextMenu.style.top = y + 'px';
         contextMenu.classList.add('show');
-        
+
         // Убираем визуальную обратную связь через короткое время
         setTimeout(() => {
             currencyElement.classList.remove('long-press-active');
@@ -2092,12 +2245,12 @@ class ValutCalc {
 
     async copyCurrencyValue() {
         if (!this.contextMenuCurrency) return;
-        
+
         const value = parseFloat(this.currentValue) || 0;
         const convertedValue = this.convertCurrency(value, this.activeCurrency, this.contextMenuCurrency);
         // Копируем без пробелов для удобства вставки
         const copyValue = convertedValue.toFixed(2);
-        
+
         try {
             await navigator.clipboard.writeText(copyValue);
             this.showCopySuccess();
@@ -2111,13 +2264,13 @@ class ValutCalc {
             document.body.removeChild(textArea);
             this.showCopySuccess();
         }
-        
+
         this.hideContextMenu();
     }
 
     async pasteCurrencyValue() {
         if (!this.contextMenuCurrency) return;
-        
+
         try {
             const clipboardText = await navigator.clipboard.readText();
             this.handlePastedValue(clipboardText);
@@ -2127,45 +2280,45 @@ class ValutCalc {
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
-            
+
             try {
                 document.execCommand('paste');
                 this.handlePastedValue(textArea.value);
             } catch (pasteErr) {
                 this.showPasteError('Failed to get data from clipboard');
             }
-            
+
             document.body.removeChild(textArea);
         }
-        
+
         this.hideContextMenu();
     }
 
     handlePastedValue(value) {
         // Убираем все пробелы и очищаем от лишних символов
         const cleanValue = value.replace(/\s/g, '').replace(/[^\d.,]/g, '').replace(',', '.');
-        
+
         // Проверяем, что это число
         const numValue = parseFloat(cleanValue);
         if (isNaN(numValue) || numValue < 0) {
             this.showPasteError(this.t('onlyNumbers'));
             return;
         }
-        
+
         // Проверяем, что есть валюта для вставки
         if (!this.contextMenuCurrency) {
             this.showPasteError(this.t('noCurrencySelected'));
             return;
         }
-        
+
         // Активируем валюту, в которую вставляем
         this.setActiveCurrency(this.contextMenuCurrency);
-        
+
         // Устанавливаем новое значение
         this.currentValue = cleanValue;
         this.hasUserInput = true;
         this.updateDisplay();
-        
+
         this.showPasteSuccess();
     }
 
@@ -2185,7 +2338,7 @@ class ValutCalc {
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
         toast.textContent = message;
-        
+
         // Стили для toast
         toast.style.cssText = `
             position: fixed;
@@ -2201,7 +2354,7 @@ class ValutCalc {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             animation: toastSlideIn 0.3s ease;
         `;
-        
+
         // Добавляем анимацию
         const style = document.createElement('style');
         style.textContent = `
@@ -2211,9 +2364,9 @@ class ValutCalc {
             }
         `;
         document.head.appendChild(style);
-        
+
         document.body.appendChild(toast);
-        
+
         // Автоматически убираем через 3 секунды
         setTimeout(() => {
             toast.style.animation = 'toastSlideIn 0.3s ease reverse';
@@ -2270,7 +2423,7 @@ class ValutCalc {
             this.currentLanguage = language;
             this.saveLanguage(language);
             this.updateLanguageDisplay();
-            
+
             // Принудительно переводим все элементы
             setTimeout(() => {
                 this.translateInterface();
@@ -2282,18 +2435,18 @@ class ValutCalc {
     updateLanguageDisplay() {
         const languageBtn = document.getElementById('languageBtn');
         if (!languageBtn) return;
-        
+
         const flag = languageBtn.querySelector('.language-flag');
         const code = languageBtn.querySelector('.language-code');
-        
+
         if (flag && code) {
             // Показываем только аббревиатуру языка, как в модальном окне
             const expectedCode = this.currentLanguage === 'ru' ? 'RU' : 'EN';
-            
+
             // Принудительно очищаем и устанавливаем новые значения
             flag.textContent = '';
             code.textContent = '';
-            
+
             // Устанавливаем только код языка
             code.textContent = expectedCode;
         }
@@ -2452,7 +2605,7 @@ class ValutCalc {
     openLanguageModal() {
         const modal = document.getElementById('languageModal');
         modal.classList.add('show');
-        
+
         // Переводим интерфейс модального окна
         setTimeout(() => {
             this.translateInterface();
@@ -2570,7 +2723,7 @@ class ValutCalc {
                 // Приоритет точным совпадениям в начале слова
                 const startsWithCode = code.toLowerCase().startsWith(searchQuery);
                 const startsWithName = name.toLowerCase().indexOf(' ' + searchQuery) === -1 &&
-                                     name.toLowerCase().startsWith(searchQuery);
+                    name.toLowerCase().startsWith(searchQuery);
 
                 return codeMatch || nameMatch || startsWithCode || startsWithName;
             })
@@ -2643,6 +2796,10 @@ class ValutCalc {
                 case 'Выберите язык':
                     element.textContent = this.t('selectLanguage');
                     break;
+                case 'Exit ValutCalc?':
+                case 'Выйти из приложения?':
+                    element.textContent = this.t('exitConfirm');
+                    break;
             }
         });
 
@@ -2651,7 +2808,7 @@ class ValutCalc {
         buttons.forEach(button => {
             const text = button.textContent.trim();
             const span = button.querySelector('span');
-            
+
             switch (text) {
                 case 'Install App':
                 case 'Установить приложение':
@@ -2681,6 +2838,14 @@ class ValutCalc {
                 case 'Add':
                 case 'Добавить валюту':
                     button.textContent = this.t('addCurrency');
+                    break;
+                case 'Yes':
+                case 'Да':
+                    button.textContent = this.t('yes');
+                    break;
+                case 'No':
+                case 'Нет':
+                    button.textContent = this.t('no');
                     break;
             }
         });
