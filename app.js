@@ -37,7 +37,8 @@ class ValutCalc {
                 'purple': 'Purple',
                 'red': 'Red',
                 'about': 'About',
-                'version': 'ValutCalc v1.0.4',
+                'version': 'ValutCalc v1.0.5',
+                'welcomeTip': 'Tip: Tap any currency to start converting',
                 'description': 'Currency converter with PWA support',
                 'installApp': 'Install App',
                 'updateApp': 'Update App',
@@ -88,7 +89,8 @@ class ValutCalc {
                 'purple': 'Фиолетовая',
                 'red': 'Красная',
                 'about': 'О программе',
-                'version': 'ValutCalc v1.0.4',
+                'version': 'ValutCalc v1.0.5',
+                'welcomeTip': 'Совет: Нажмите на валюту для пересчета',
                 'description': 'Конвертер валют с поддержкой PWA',
                 'installApp': 'Установить приложение',
                 'updateApp': 'Обновить приложение',
@@ -2475,7 +2477,8 @@ class ValutCalc {
             'donateDescription': 'donateDescription',
             'koFiBtn': 'koFi',
             'paypalBtn': 'paypal',
-            'bitcoinBtn': 'bitcoin'
+            'bitcoinBtn': 'bitcoin',
+            'usageTip': 'welcomeTip'
         };
 
         for (const [elementId, translationKey] of Object.entries(elements)) {
