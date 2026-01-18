@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +10,13 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta name="theme-color" content="#1a1a1a">
     <meta name="description" content="Currency converter with support for USD, EUR, AZN">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' chrome-extension:; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.exchangerate-api.com https://ko-fi.com https://paypal.com;">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' chrome-extension:; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.exchangerate-api.com https://ko-fi.com https://paypal.com;">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 </head>
+
 <body>
     <div class="app">
         <!-- Верхняя панель с кнопками -->
@@ -22,15 +25,17 @@
                 <span class="language-flag">🇺🇸</span>
                 <span class="language-code">EN</span>
             </button>
-            
+
             <div class="top-panel-center">
                 <!-- Пустое пространство -->
             </div>
-            
+
             <button class="settings-btn" id="settingsBtn" title="Settings">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2"/>
-                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
+                        stroke="currentColor" stroke-width="2" />
                 </svg>
             </button>
         </div>
@@ -88,18 +93,19 @@
                         <button class="key" data-key=".">,</button>
                     </div>
                 </div>
-                
+
                 <!-- Боковые кнопки -->
                 <div class="side-buttons">
                     <button class="side-btn clear-btn" data-action="clear">AC</button>
                     <button class="side-btn delete-btn" data-action="delete">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </button>
                 </div>
             </div>
-            
+
             <!-- Подпись приложения -->
             <div class="keypad-footer" id="supportArea">
                 <div class="app-title">ValutCalc</div>
@@ -123,15 +129,17 @@
         <div class="currency-context-menu" id="currencyContextMenu">
             <div class="currency-context-menu-item" id="copyValueBtn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1z" stroke="currentColor" stroke-width="2"/>
-                    <path d="M19 3H9a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1z" stroke="currentColor" stroke-width="2" />
+                    <path d="M19 3H9a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"
+                        stroke="currentColor" stroke-width="2" />
                 </svg>
                 Copy Value
             </div>
             <div class="currency-context-menu-item" id="pasteValueBtn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" stroke="currentColor" stroke-width="2"/>
-                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke="currentColor" stroke-width="2"/>
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                        stroke="currentColor" stroke-width="2" />
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke="currentColor" stroke-width="2" />
                 </svg>
                 Paste Value
             </div>
@@ -147,8 +155,8 @@
                 </div>
                 <div class="support-modal-body">
                     <p class="support-description" data-translate="donateDescription">
-                        Thank you for using ValutCalc! If you find this app useful, 
-                        consider supporting its development. Every contribution helps 
+                        Thank you for using ValutCalc! If you find this app useful,
+                        consider supporting its development. Every contribution helps
                         improve the app and add new features.
                     </p>
                     <div class="support-options">
@@ -159,14 +167,16 @@
                                 <div class="support-subtitle" data-translate="buyMeCoffee">Buy me a coffee</div>
                             </div>
                         </a>
-                        <a href="https://www.paypal.com/donate/?business=FV7BW65PE8NS6" target="_blank" class="support-option paypal">
+                        <a href="https://www.paypal.com/donate/?business=FV7BW65PE8NS6" target="_blank"
+                            class="support-option paypal">
                             <div class="support-icon">💳</div>
                             <div class="support-text">
                                 <div class="support-title" data-translate="paypal">PayPal</div>
                                 <div class="support-subtitle" data-translate="sendMoney">Send money</div>
                             </div>
                         </a>
-                        <a href="#" class="support-option bitcoin" onclick="navigator.clipboard.writeText('13MQuWuS82AuhpyCSo1n1AwE7qDruzTTBk'); alert(app.t('bitcoinCopied')); return false;">
+                        <a href="#" class="support-option bitcoin"
+                            onclick="navigator.clipboard.writeText('13MQuWuS82AuhpyCSo1n1AwE7qDruzTTBk'); alert(app.t('bitcoinCopied')); return false;">
                             <div class="support-icon">₿</div>
                             <div class="support-text">
                                 <div class="support-title" data-translate="bitcoin">Bitcoin</div>
@@ -188,46 +198,51 @@
                     <h2>Settings</h2>
                     <button class="settings-close" id="settingsClose">×</button>
                 </div>
-                
+
                 <div class="settings-body">
                     <div class="settings-section">
                         <h3>Application</h3>
                         <button class="install-btn" id="installBtn" style="display: none;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/>
-                                <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2"/>
-                                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/>
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor"
+                                    stroke-width="2" />
+                                <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" />
+                                <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" />
                             </svg>
                             Install App
                         </button>
-                        
+
                         <button class="update-btn-settings" id="updateBtnSettings" style="display: none;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
-                                <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
-                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                                <path d="M1 4v6h6" stroke="currentColor" stroke-width="2" />
+                                <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2" />
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"
+                                    stroke="currentColor" stroke-width="2" />
                             </svg>
                             Update App
                         </button>
-                        
+
                         <button class="currency-settings-btn" id="currencySettingsBtn">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2"/>
+                                <path
+                                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                                    stroke="currentColor" stroke-width="2" />
                             </svg>
                             <span>Currency Settings</span>
                         </button>
                     </div>
-                    
+
                     <!-- Разделительная линия -->
                     <div class="settings-divider"></div>
-                    
+
                     <div class="settings-section">
                         <h3>Exchange Rates</h3>
                         <button class="refresh-rates-btn" id="refreshRatesBtn">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/>
-                                <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2"/>
-                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2"/>
+                                <path d="M1 4v6h6" stroke="currentColor" stroke-width="2" />
+                                <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2" />
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"
+                                    stroke="currentColor" stroke-width="2" />
                             </svg>
                             <span>Refresh Exchange Rates</span>
                         </button>
@@ -236,10 +251,10 @@
                             <span class="last-update-time" id="lastUpdateTime">Loading...</span>
                         </div>
                     </div>
-                    
+
                     <!-- Разделительная линия -->
                     <div class="settings-divider"></div>
-                    
+
                     <div class="settings-section">
                         <h3>Theme</h3>
                         <div class="theme-options">
@@ -275,11 +290,13 @@
                             </label>
                         </div>
                     </div>
-                    
+
                     <div class="settings-section">
                         <h3>About</h3>
                         <p>ValutCalc v1.0.3</p>
                         <p>Currency converter with PWA support</p>
+                        <p><a href="privacy.html" target="_blank"
+                                style="color: var(--accent-color); text-decoration: none;">Privacy Policy</a></p>
                     </div>
                 </div>
             </div>
@@ -300,22 +317,16 @@
                             <!-- Динамически генерируется в JavaScript -->
                         </div>
                     </div>
-                    
+
                     <!-- Available Currencies Section -->
                     <div class="currency-settings-section available-section">
                         <div class="available-section-header">
                             <h3 data-translate="availableCurrencies">Available Currencies</h3>
                             <div class="search-container">
-                                <input type="text"
-                                       id="currencySearch"
-                                       class="currency-search-input"
-                                       data-translate-placeholder="searchCurrencies"
-                                       placeholder="Поиск валют..."
-                                       autocomplete="off"
-                                       inputmode="text"
-                                       pattern="[A-Za-zА-Яа-я0-9\s]*"
-                                       autocapitalize="none"
-                                       spellcheck="false">
+                                <input type="text" id="currencySearch" class="currency-search-input"
+                                    data-translate-placeholder="searchCurrencies" placeholder="Поиск валют..."
+                                    autocomplete="off" inputmode="text" pattern="[A-Za-zА-Яа-я0-9\s]*"
+                                    autocapitalize="none" spellcheck="false">
                                 <button class="search-clear-btn" id="searchClearBtn" style="display: none;">×</button>
                             </div>
                             <div class="search-results-count" id="searchResultsCount" style="display: none;"></div>
@@ -363,7 +374,8 @@
 
     <script src="app.js?v=80"></script>
 </body>
+
 </html>
 < ! - -   F o r c e   r e f r e s h   - - > 
- 
- 
+     
+     

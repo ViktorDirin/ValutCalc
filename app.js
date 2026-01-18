@@ -2876,16 +2876,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Service Worker регистрация - временно отключено для отладки
-/*
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
+        navigator.serviceWorker.register('./sw.js')
             .then(registration => {
-                console.log('SW registered:', registration);
+                console.log('ValutCalc: SW registered successfully');
+                if (typeof app !== 'undefined') {
+                    app.serviceWorkerRegistration = registration;
+                }
             })
-            .catch(registrationError => {
-                console.log('SW registration failed:', registrationError);
+            .catch(error => {
+                console.error('ValutCalc: SW registration failed:', error);
             });
     });
 }
-*/
