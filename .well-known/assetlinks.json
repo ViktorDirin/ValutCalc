@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.viktordirin.valutcalc",
+            "sha256_cert_fingerprints": [
+                "61:3B:E2:6B:73:2F:85:53:4A:ED:1B:8B:6A:63:6A:AB:49:54:41:39:A4:FB:FF:5C:8D:79:21:89:57:43:96:A5"
+            ]
+        }
+    }
+]
