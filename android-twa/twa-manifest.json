@@ -1,44 +1,52 @@
 {
-  "packageId": "com.viksoft.valutcalc.twa",
+  "packageId": "io.github.viktordirin.twa",
   "host": "viktordirin.github.io",
   "name": "ValutCalc",
   "launcherName": "ValutCalc",
   "display": "standalone",
-  "themeColor": "#ff6b35",
-  "themeColorDark": "#1a1a1a",
-  "navigationColor": "#1a1a1a",
-  "navigationColorDark": "#1a1a1a",
-  "navigationDividerColor": "#ff6b35",
-  "navigationDividerColorDark": "#ff6b35",
-  "backgroundColor": "#1a1a1a",
+  "themeColor": "#FF6B35",
+  "themeColorDark": "#1A1A1A",
+  "navigationColor": "#1A1A1A",
+  "navigationColorDark": "#1A1A1A",
+  "navigationDividerColor": "#FF6B35",
+  "navigationDividerColorDark": "#FF6B35",
+  "backgroundColor": "#1A1A1A",
   "enableNotifications": false,
   "startUrl": "/ValutCalc/",
   "iconUrl": "https://viktordirin.github.io/ValutCalc/icons/icon-512.png",
   "maskableIconUrl": "https://viktordirin.github.io/ValutCalc/icons/icon-512.png",
   "splashScreenFadeOutDuration": 300,
-  "splashScreenSpinnerColor": "#ff6b35",
-  "enableSiteSettingsShortcut": true,
-  "enableFeature": {
-    "crossOriginIsolated": false
-  },
-  "webManifestUrl": "https://viktordirin.github.io/ValutCalc/manifest.json",
-  "appVersionName": "1.0.3",
-  "appVersionCode": 1,
+  "appVersionName": "1.0.4",
+  "appVersionCode": 5,
   "shortcuts": [
     {
       "name": "ValutCalc",
       "shortName": "ValutCalc",
       "url": "/ValutCalc/",
-      "iconUrl": "https://viktordirin.github.io/ValutCalc/icons/icon-192.png"
+      "chosenIconUrl": "https://viktordirin.github.io/ValutCalc/icons/icon-192.png"
     }
   ],
-  "orientation": "portrait",
-  "fingerprints": [],
   "generatorApp": "bubblewrap-cli",
-  "manifestVersion": 1,
-  "manifestUrl": "/manifest.json",
-  "defaultUrl": "/",
-  "supportedOrigins": [
-    "https://viktordirin.github.io"
-  ]
+  "webManifestUrl": "https://viktordirin.github.io/ValutCalc/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "minSdkVersion": 21,
+  "orientation": "portrait",
+  "fingerprints": [
+    {
+      "sha256Fingerprint": "B5:65:D2:F1:CB:1B:86:84:47:0D:5E:A6:B5:AC:47:95:C4:C3:FB:CF:4E:10:36:A3:2D:B1:75:B8:3F:D8:0D:D8"
+    }
+  ],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "displayOverride": [],
+  "appVersion": "1.0.4",
+  "manifestUrl": "https://viktordirin.github.io/ValutCalc/manifest.json",
+  "defaultUrl": "https://viktordirin.github.io/ValutCalc/"
 }
