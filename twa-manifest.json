@@ -1,5 +1,5 @@
 {
-  "packageId": "io.github.viktordirin.twa",
+  "packageId": "io.github.viktordirin.ValutCalc",
   "host": "viktordirin.github.io",
   "name": "ValutCalc",
   "launcherName": "ValutCalc",
@@ -17,11 +17,11 @@
   "maskableIconUrl": "https://viktordirin.github.io/ValutCalc/icons/icon-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "D:\\Work\\APP Projects\\ValutCalc\\temp-twa\\android.keystore",
+    "path": "D:\\Work\\APP Projects\\ValutCalc\\android.keystore",
     "alias": "android"
   },
-  "appVersionName": "5",
-  "appVersionCode": 5,
+  "appVersionName": "6",
+  "appVersionCode": 6,
   "shortcuts": [
     {
       "name": "Конвертер валют",
@@ -35,24 +35,14 @@
   "fallbackType": "customtabs",
   "features": {
     "playBilling": {
-      "enabled": true
+      "enabled": false
     }
   },
-  "alphaDependencies": {
-    "enabled": false
-  },
-  "enableSiteSettingsShortcut": true,
-  "isChromeOSOnly": false,
-  "isMetaQuest": false,
-  "fullScopeUrl": "https://viktordirin.github.io/ValutCalc/",
-  "minSdkVersion": 21,
-  "orientation": "portrait",
-  "fingerprints": [],
-  "additionalTrustedOrigins": [],
-  "retainedBundles": [],
-  "protocolHandlers": [],
-  "fileHandlers": [],
-  "launchHandlerClientMode": "",
-  "displayOverride": [],
-  "appVersion": "5"
+  "alphaRelease": false,
+  "enableSiteSettingsShortcut": "true",
+  "isChromeOSOnly": "false",
+  "isWebRequirementsCheckEnabled": "false",
+  "orientation": "any",
+  "showStatusIcon": "true",
+  "unsupportedChromeMessenger": "none"
 }
