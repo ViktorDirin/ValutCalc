@@ -37,12 +37,14 @@ class ValutCalc {
                 'purple': 'Purple',
                 'red': 'Red',
                 'about': 'About',
-                'version': 'ValutCalc v1.0.5',
+                'version': 'ValutCalc v1.0.6',
                 'welcomeTip': 'Tip: Tap any currency to start converting',
                 'description': 'Currency converter with PWA support',
                 'installApp': 'Install App',
                 'updateApp': 'Update App',
                 'checkUpdates': 'Check for updates',
+                'clearCache': 'Clear Cache',
+                'clearCacheAlert': "To clear cache: In the opened window, find 'Clear Data' -> 'Clear Cache'.",
                 'currencySettings': 'Currency Settings',
                 'currentCurrencies': 'Current Currencies',
                 'availableCurrencies': 'Available Currencies',
@@ -89,12 +91,14 @@ class ValutCalc {
                 'purple': 'Фиолетовая',
                 'red': 'Красная',
                 'about': 'О программе',
-                'version': 'ValutCalc v1.0.5',
+                'version': 'ValutCalc v1.0.6',
                 'welcomeTip': 'Совет: Нажмите на валюту для пересчета',
                 'description': 'Конвертер валют с поддержкой PWA',
                 'installApp': 'Установить приложение',
                 'updateApp': 'Обновить приложение',
                 'checkUpdates': 'Проверить обновления',
+                'clearCache': 'Очистить кеш',
+                'clearCacheAlert': "Чтобы очистить кеш: в открывшемся окне найдите 'Очистить данные' -> 'Очистить кеш'.",
                 'currencySettings': 'Настройки валют',
                 'currentCurrencies': 'Текущие валюты',
                 'availableCurrencies': 'Доступные валюты',
@@ -458,6 +462,14 @@ class ValutCalc {
             this.updateApp();
         });
 
+        // Кнопка очистки кеша
+        const clearCacheBtn = document.getElementById('clearCacheBtn');
+        if (clearCacheBtn) {
+            clearCacheBtn.addEventListener('click', () => {
+                this.openSystemSettings();
+            });
+        }
+
         // Кнопка обновления курсов валют
         document.getElementById('refreshRatesBtn').addEventListener('click', () => {
             this.refreshExchangeRates();
@@ -617,6 +629,13 @@ class ValutCalc {
                 history.pushState({ screen: 'main' }, '');
             });
         }
+    }
+
+    // Function to help user find system settings for clearing cache
+    openSystemSettings() {
+        alert(this.translations[this.currentLanguage]?.clearCacheAlert || "To clear cache: In the opened window, find 'Clear Data' -> 'Clear Cache'.");
+        // This is a web-standard way to suggest opening app info on Android
+        window.location.href = "intent:#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;data=package:io.github.viktordirin.ValutCalc;end";
     }
 
     async loadExchangeRates() {
