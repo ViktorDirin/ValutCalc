@@ -5,7 +5,7 @@ plugins {
 }
 
 def twaManifest = [
-    applicationId: 'io.github.viktordirin.ValutCalc',
+    applicationId: 'io.github.viktordirin.twa',
     hostName: 'viktordirin.github.io',
     launchUrl: '/ValutCalc/',
     name: 'ValutCalc',
@@ -28,7 +28,7 @@ def twaManifest = [
 
 android {
     compileSdkVersion 36
-    namespace "io.github.viktordirin.ValutCalc"
+    namespace "io.github.viktordirin.twa"
     
     // Блок подписи (Signing Configuration)
     signingConfigs {
@@ -41,7 +41,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "io.github.viktordirin.ValutCalc"
+        applicationId "io.github.viktordirin.twa"
         minSdkVersion 21
         targetSdkVersion 35
         versionCode 6
