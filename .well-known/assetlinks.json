@@ -5,9 +5,9 @@
         ],
         "target": {
             "namespace": "android_app",
-            "package_name": "io.github.viktordirin.ValutCalc",
+            "package_name": "io.github.viktordirin.twa",
             "sha256_cert_fingerprints": [
-                "6C:2F:34:DB:91:0C:3F:15:72:D5:54:18:8E:2B:52:88:CE:35:7F:E0:3C:5B:BF:23:4B:8B:A2:74:94:84:B4:45"
+                "DA:83:2B:C7:36:FC:A8:22:FB:73:38:2F:9F:16:B1:9A:36:A6:98:A8:F2:6C:EB:29:FB:EE:4A:0C:55:E4:77:90"
             ]
         }
     }
