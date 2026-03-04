@@ -34,9 +34,8 @@
         \"relation\": [\"delegate_permission/common.handle_all_urls\"],
         \"target\": {
             \"namespace\": \"web\",
-            \"site\": \"https://viktordirin.github.io\"
+            \"site\": \"https://viktordirin.github.io/ValutCalc\"
         }
     }]
-    
-  </string>  
+</string>
 </resources>
