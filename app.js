@@ -633,9 +633,8 @@ class ValutCalc {
 
     // Function to help user find system settings for clearing cache
     openSystemSettings() {
-        alert(this.translations[this.currentLanguage]?.clearCacheAlert || "To clear cache: In the opened window, find 'Clear Data' -> 'Clear Cache'.");
         // This is a web-standard way to suggest opening app info on Android
-        window.location.href = "intent:#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;data=package:io.github.viktordirin.ValutCalc;end";
+        window.location.href = "intent:#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;data=package:io.github.viktordirin.twa;end";
     }
 
     async loadExchangeRates() {
