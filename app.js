@@ -585,48 +585,20 @@ class ValutCalc {
 
         if (exitYesBtn) {
             exitYesBtn.addEventListener('click', () => {
-                // Устанавливаем флаг выхода, чтобы предотвратить повторное открытие модального окна
                 this.isExiting = true;
-
-                // Если пользователь нажал "Да", пытаемся закрыть приложение
                 if (navigator.app && navigator.app.exitApp) {
                     navigator.app.exitApp();
                 } else {
-                    // Стратегия для браузера:
-                    // 1. Пробуем window.close() (обычно работает только для окон, открытых скриптом)
-                    try {
-                        window.close();
-                    } catch (e) {
-                        console.log('Cannot close window via script');
-                    }
-
-                    // 2. Возвращаемся глубоко назад в истории, надеясь закрыть PWA/вкладку
-                    // Мы находимся в 'exit-confirm'. Перед этим был 'main'.
-                    // Возврат на 2 шага назад должен вывести нас из нашего приложения
-                    history.go(-2);
-
-                    // Если мы все еще здесь (пользователь в браузере с длинной историей),
-                    // и history.go(-2) просто перекинул нас назад, но не закрыл вкладку...
-                    // Или если go(-2) не сработал как ожидалось (например если истории нет).
-
-                    // Fallback, если exit не сработал и мы все еще в приложении:
-                    // Сбрасываем флаг и возвращаем пользователя в приложение, чтобы не было фриза
-                    this.isExiting = false;
-                    this.closeExitModal();
-
-                    // Важно: восстанавливаем стейт main, так же как кнопка No, 
-                    // чтобы кнопка Назад снова работала
-                    history.pushState({ screen: 'main' }, '');
+                    this._closeExitModalUI();
+                    window.close();
                 }
             });
         }
 
         if (exitNoBtn) {
             exitNoBtn.addEventListener('click', () => {
-                this.closeExitModal();
-                // Вместо history.back(), который может оставить нас с пустым стеком,
-                // мы явно пушим состояние main, чтобы следующий Back сработал корректно
-                history.pushState({ screen: 'main' }, '');
+                this.ignoreNextPopstate = false;
+                history.back();
             });
         }
     }
@@ -1965,22 +1937,14 @@ class ValutCalc {
     }
 
     openExitModal() {
-        if (this.currentScreen === 'exit-confirm') return;
-
+        if (this.currentScreen !== 'main') return;
         const modal = document.getElementById('exitModal');
         if (modal) {
             modal.style.display = 'flex';
-            // Анимация
-            requestAnimationFrame(() => {
-                modal.classList.add('show');
-            });
-
-            // Перевод
+            setTimeout(() => modal.classList.add('show'), 10);
             this.translateInterface();
         }
-
         this.currentScreen = 'exit-confirm';
-        // Пушим состояние выхода, чтобы кнопка "Назад" закрыла его
         history.pushState({ screen: 'exit-confirm' }, '');
     }
 
@@ -1992,9 +1956,7 @@ class ValutCalc {
         const modal = document.getElementById('exitModal');
         if (modal) {
             modal.classList.remove('show');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
         }
         this.currentScreen = 'main';
     }
