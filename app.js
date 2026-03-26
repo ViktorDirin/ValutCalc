@@ -1653,13 +1653,17 @@ class ValutCalc {
                 </div>
             `;
 
-            // Добавляем обработчик для кнопки добавления
+            // Добавляем обработчики для кнопки добавления
+            // mousedown+touchstart срабатывают ДО того, как закроется клавиатура,
+            // решая проблему "двойного нажатия" на мобильных устройствах
             const addBtn = currencyItem.querySelector('.add-currency-btn');
-            addBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Предотвращаем срабатывание drag & drop
+            const handleAdd = (e) => {
+                e.stopPropagation();
                 e.preventDefault();
                 this.addCurrency(code);
-            });
+            };
+            addBtn.addEventListener('mousedown', handleAdd);
+            addBtn.addEventListener('touchstart', handleAdd, { passive: false });
 
             container.appendChild(currencyItem);
         });
@@ -1705,6 +1709,11 @@ class ValutCalc {
         // Убрали ограничение на количество валют
         this.selectedCurrencies.push(currencyCode);
         this.saveSelectedCurrencies();
+
+        // Убираем фокус с поля поиска, чтобы закрыть клавиатуру на мобильных
+        const searchInput = document.getElementById('currencySearch');
+        if (searchInput) searchInput.blur();
+
         this.updateCurrencySettingsDisplay();
         this.updateDisplay();
     }
