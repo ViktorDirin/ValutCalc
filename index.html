@@ -31,11 +31,13 @@
                 <!-- Пустое пространство -->
             </div>
 
+            <button class="guide-btn" id="open-guide-btn" title="Usage Guide">?</button>
+
             <button class="settings-btn" id="settingsBtn" title="Settings">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2" />
                     <path
-                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
+                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"
                         stroke="currentColor" stroke-width="2" />
                 </svg>
             </button>
@@ -251,6 +253,14 @@
                             </svg>
                             <span>Currency Settings</span>
                         </button>
+
+                        <button class="currency-settings-btn" id="settings-guide-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span data-translate="usageGuide">Usage Guide</span>
+                        </button>
                     </div>
 
                     <!-- Разделительная линия -->
@@ -314,7 +324,7 @@
 
                     <div class="settings-section">
                         <h3>About</h3>
-                        <p>ValutCalc v1.0.6</p>
+                        <p>ValutCalc v1.0.7</p>
                         <p>Currency converter with PWA support</p>
                         <p><a href="privacy.html" target="_blank"
                                 style="color: var(--accent-color); text-decoration: none;">Privacy Policy</a></p>
@@ -392,6 +402,40 @@
             </div>
         </div>
     </div>
+
+        <!-- Usage Guide Modal -->
+        <div id="guide-modal" style="display: none;">
+            <div class="guide-modal-overlay"></div>
+            <div class="guide-modal-content">
+                <button class="guide-modal-close" id="close-guide-btn">&times;</button>
+
+                <!-- EN Content -->
+                <div class="guide-lang-block" id="guide-lang-en">
+                    <h2>ValutCalc — Fast Currency Converter</h2>
+                    <ul>
+                        <li><strong>Main Screen:</strong> Add currencies you need. Enter an amount in any field — others update instantly.</li>
+                        <li><strong>Manage List:</strong> Tap gear (⚙️) -&gt; 'Currency Settings'.</li>
+                        <li><strong>Remove:</strong> Tap 'Delete' to hide a currency.</li>
+                        <li><strong>Sort:</strong> Press and drag to reorder.</li>
+                        <li><strong>Add:</strong> Find in 'Available Currencies' and tap 'Add'.</li>
+                    </ul>
+                    <p class="guide-footer-note">Full guide available in Settings.</p>
+                </div>
+
+                <!-- RU Content -->
+                <div class="guide-lang-block" id="guide-lang-ru">
+                    <h2>ValutCalc — Быстрый конвертер валют</h2>
+                    <ul>
+                        <li><strong>Главный экран:</strong> Добавьте нужные валюты. Введите сумму в любое поле — остальные обновятся мгновенно.</li>
+                        <li><strong>Настройка списка:</strong> Шестеренка (⚙️) -&gt; 'Настройки валют'.</li>
+                        <li><strong>Удаление:</strong> Нажмите 'Удалить', чтобы скрыть валюту.</li>
+                        <li><strong>Сортировка:</strong> Зажмите и перетащите для изменения порядка.</li>
+                        <li><strong>Добавление:</strong> Найдите валюту в списке 'Доступные' и нажмите 'Добавить'.</li>
+                    </ul>
+                    <p class="guide-footer-note">Полная инструкция в Настройках.</p>
+                </div>
+            </div>
+        </div>
 
     <script src="app.js?v=81"></script>
 </body>

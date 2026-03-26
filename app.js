@@ -37,7 +37,7 @@ class ValutCalc {
                 'purple': 'Purple',
                 'red': 'Red',
                 'about': 'About',
-                'version': 'ValutCalc v1.0.6',
+                'version': 'ValutCalc v1.0.7',
                 'welcomeTip': 'Tip: Tap any currency to start converting',
                 'description': 'Currency converter with PWA support',
                 'installApp': 'Install App',
@@ -73,7 +73,8 @@ class ValutCalc {
                 'thankYou': 'Thank you for your support!',
                 'exitConfirm': 'Exit ValutCalc?',
                 'yes': 'Yes',
-                'no': 'No'
+                'no': 'No',
+                'usageGuide': 'Usage Guide'
             },
             ru: {
                 // Main interface
@@ -91,7 +92,7 @@ class ValutCalc {
                 'purple': 'Фиолетовая',
                 'red': 'Красная',
                 'about': 'О программе',
-                'version': 'ValutCalc v1.0.6',
+                'version': 'ValutCalc v1.0.7',
                 'welcomeTip': 'Совет: Нажмите на валюту для пересчета',
                 'description': 'Конвертер валют с поддержкой PWA',
                 'installApp': 'Установить приложение',
@@ -127,7 +128,8 @@ class ValutCalc {
                 'thankYou': '🙏 Спасибо за поддержку!',
                 'exitConfirm': 'Выйти из приложения?',
                 'yes': 'Да',
-                'no': 'Нет'
+                'no': 'Нет',
+                'usageGuide': 'Инструкция'
             }
         };
         this.availableCurrencies = {
@@ -406,6 +408,12 @@ class ValutCalc {
 
         // History API initial state
         history.pushState({ screen: 'main' }, '');
+
+        // First-run: show guide if never shown before
+        if (!localStorage.getItem('guideShown')) {
+            this.showGuide();
+            localStorage.setItem('guideShown', 'true');
+        }
     }
 
     setupEventListeners() {
@@ -486,6 +494,15 @@ class ValutCalc {
         document.getElementById('currencySettingsBtn').addEventListener('click', () => {
             this.openCurrencySettings();
         });
+
+        // Кнопка Usage Guide в настройках
+        const settingsGuideBtn = document.getElementById('settings-guide-btn');
+        if (settingsGuideBtn) {
+            settingsGuideBtn.addEventListener('click', () => {
+                this.closeSettings();
+                this.showGuide();
+            });
+        }
 
         // Закрытие настроек валют
         document.getElementById('currencySettingsClose').addEventListener('click', () => {
@@ -579,6 +596,31 @@ class ValutCalc {
             console.error('searchClearBtn not found!');
         }
 
+        // Guide modal buttons
+        const openGuideBtn = document.getElementById('open-guide-btn');
+        if (openGuideBtn) {
+            openGuideBtn.addEventListener('click', () => {
+                this.showGuide();
+            });
+        }
+
+        const closeGuideBtn = document.getElementById('close-guide-btn');
+        if (closeGuideBtn) {
+            closeGuideBtn.addEventListener('click', () => {
+                this.hideGuide();
+            });
+        }
+
+        // Close guide on overlay click
+        const guideModal = document.getElementById('guide-modal');
+        if (guideModal) {
+            guideModal.addEventListener('click', (e) => {
+                if (e.target.classList.contains('guide-modal-overlay')) {
+                    this.hideGuide();
+                }
+            });
+        }
+
         // Exit Modal Buttons
         const exitYesBtn = document.getElementById('exitYesBtn');
         const exitNoBtn = document.getElementById('exitNoBtn');
@@ -601,6 +643,30 @@ class ValutCalc {
                 history.back();
             });
         }
+    }
+
+    // ===== Guide Modal Methods =====
+    showGuide() {
+        const modal = document.getElementById('guide-modal');
+        const enBlock = document.getElementById('guide-lang-en');
+        const ruBlock = document.getElementById('guide-lang-ru');
+        if (!modal || !enBlock || !ruBlock) return;
+
+        // Show correct language block
+        if (this.currentLanguage === 'ru') {
+            enBlock.classList.remove('active');
+            ruBlock.classList.add('active');
+        } else {
+            ruBlock.classList.remove('active');
+            enBlock.classList.add('active');
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    hideGuide() {
+        const modal = document.getElementById('guide-modal');
+        if (modal) modal.style.display = 'none';
     }
 
     // Function to help user find system settings for clearing cache

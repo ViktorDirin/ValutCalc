@@ -44,15 +44,15 @@ android {
         applicationId "io.github.viktordirin.twa"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 6
-        versionName "1.0.6"
+        versionCode 7
+        versionName "1.0.7"
         
         def launchUrl = "https://" + twaManifest.hostName + twaManifest.launchUrl
         
         resValue "string", "appName", twaManifest.name.toString()
         resValue "string", "launcherName", twaManifest.launcherName.toString()
         resValue "string", "launchUrl", launchUrl.toString()
-        resValue "string", "webManifestUrl", "https://viktordirin.github.io/ValutCalc/manifest.json"
+        resValue "string", "webManifestUrl", "https://viktordirin.github.io/manifest.json"
         resValue "string", "hostName", twaManifest.hostName.toString()
         resValue "color", "colorPrimary", twaManifest.themeColor.toString()
         resValue "color", "colorPrimaryDark", twaManifest.themeColorDark.toString()
